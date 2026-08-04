@@ -234,7 +234,7 @@
       <button class="btn ghost" id="btnSplit">Split into Lines</button>
       <button class="btn ghost" id="btnClear">Clear</button>
     </div>
-    <div class="hint">Kailangan mo ng pang-matagalang output? Ang browser TTS ay <b>walang limitasyon</b> â€” generate ka lang nang generate.</div>
+    <div class="hint">Kailangan mo ng pang-matagalang output? Ang browser TTS ay <b>walang limitasyon</b> — generate ka lang nang generate.</div>
   </section>
 
   <section class="card">
@@ -251,15 +251,15 @@
     </div>
 
     <div class="field">
-      <label class="lbl">Browser Voice</label>
+      <label class="lbl">Natural Voice / Boses</label>
       <select id="voiceSelect"></select>
+      <div class="hint" id="voiceModeHint">Natural Filipino male voice via Edge TTS.</div>
     </div>
 
     <div class="field">
       <div class="sliders">
         <div class="slider"><label>Pitch <b id="pitchVal">+0</b></label><input type="range" id="pitch" min="-20" max="20" value="0" /></div>
         <div class="slider"><label>Rate <b id="rateVal">1.00</b></label><input type="range" id="rate" min="50" max="200" value="100" /></div>
-        <div class="slider"><label>Bass Boost <b id="bassVal">6dB</b></label><input type="range" id="bass" min="0" max="18" value="6" /></div>
         <div class="slider"><label>Volume <b id="volVal">100%</b></label><input type="range" id="vol" min="0" max="150" value="100" /></div>
       </div>
     </div>
@@ -295,7 +295,7 @@
   <section class="card">
     <h3><span class="n">5</span> Export &amp; Download</h3>
     <label class="lbl">Unlimited Voiceover</label>
-    <p class="hint" style="margin-bottom:14px">Playback at download ay libre at walang limitasyon. Para sa <b>.wav</b> na file, i-click ang Record &amp; Download at piliin ang tab na ito (i-check ang "Share tab audio" / "Share system audio").</p>
+    <p class="hint" style="margin-bottom:14px">Playback at download ay libre at walang limitasyon. Ang <b>.wav</b> ay direktang pinagdugtong na audio ng lahat ng linya — walang screen-share na kailangan.</p>
     <div class="grow"></div>
     <div class="btn-row">
       <button class="btn green" id="btnRecord">Record &amp; Download .wav</button>
@@ -308,7 +308,7 @@
 </div>
 
 <div class="footer">
-  <b>DON BOSSING</b> â€” Sikolohiya ng Pera, Diskarte, at Buhay Pinoy.<br/>
+  <b>DON BOSSING</b> — Sikolohiya ng Pera, Diskarte, at Buhay Pinoy.<br/>
   Built for faceless YouTube creators. Free, unlimited, no API key required.
 </div>
 
@@ -399,10 +399,9 @@ const state = {
   format:"shorts",
   persona:"mayabang_may_laman",
   intensity:"high_hype",
-  voiceURI:null,
+  voiceURI:"fil-PH-AngeloNeural",
   pitch:0,
   rate:100,
-  bass:6,
   vol:100,
   autoEmotion:true,
   lines:[],
@@ -412,18 +411,62 @@ const state = {
   recording:false
 };
 
+const EDGE_API = (location.protocol === "file:" ? null : location.origin + "/api/tts");
+const EDGE_VOICES = [
+  { shortName:"fil-PH-AngeloNeural", label:"Angelo — Filipino Male (Natural)", locale:"fil-PH", gender:"Male" },
+  { shortName:"fil-PH-BlessicaNeural", label:"Blessica — Filipino Female (Natural)", locale:"fil-PH", gender:"Female" },
+  { shortName:"en-US-GuyNeural", label:"Guy — English Male (Natural)", locale:"en-US", gender:"Male" },
+  { shortName:"en-US-ChristopherNeural", label:"Christopher — English Male (Natural)", locale:"en-US", gender:"Male" },
+  { shortName:"en-US-EricNeural", label:"Eric — English Male (Natural)", locale:"en-US", gender:"Male" },
+  { shortName:"en-US-BrianNeural", label:"Brian — English Male (Natural)", locale:"en-US", gender:"Male" },
+  { shortName:"en-US-AriaNeural", label:"Aria — English Female (Natural)", locale:"en-US", gender:"Female" }
+];
+const DEFAULT_EDGE_VOICE = "fil-PH-AngeloNeural";
+
 let lineSeq = 0;
 const nextLineId = () => "line_" + (++lineSeq) + "_" + Date.now().toString(36);
 
 /* ==================== TTS ENGINE ==================== */
 
 const Engine = {
-  voices:[],
+  mode:"edge",              // "edge" (Vercel API) or "browser" (fallback)
+  voices:[],                // browser voices (fallback)
   synth: window.speechSynthesis,
+  audioCache: new Map(),
+  currentAudio: null,
+  currentUrl: null,
+  cacheKey: null,
+  pending: null,            // {resolve} of in-flight play
+  gen: 0,                   // generation counter to cancel in-flight fetches/plays
+
+  async checkApi(){
+    if(!EDGE_API) return false;
+    try{
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort(), 4000);
+      const r = await fetch(EDGE_API, { signal: ctrl.signal });
+      clearTimeout(to);
+      if(!r.ok) return false;
+      const j = await r.json();
+      return !!(j && j.ok);
+    }catch(e){ return false; }
+  },
+
+  async init(){
+    this.mode = (await this.checkApi()) ? "edge" : "browser";
+    if(this.mode === "browser"){
+      this.loadVoices();
+      this.synth.onvoiceschanged = () => this.loadVoices();
+    }
+    populateVoiceSelect();
+    return this.mode;
+  },
+
   loadVoices(){
     const v = this.synth.getVoices().slice();
     if(v.length){ this.voices = v; populateVoiceSelect(); }
   },
+
   pickVoice(){
     const list = this.voices;
     const prefs = list.filter(v => (v.lang||"").toLowerCase().startsWith("fil") || (v.lang||"").toLowerCase().startsWith("tl"));
@@ -433,6 +476,7 @@ const Engine = {
     const anyMale = list.find(v => !/\bfemale\b/i.test(v.name));
     return (malePhil[0] || anyPhil || maleEng[0] || anyMale || list[0]) || null;
   },
+
   buildUtterance(text, line){
     const voice = this.voices.find(v => v.voiceURI === state.voiceURI) || this.pickVoice();
     const persona = PERSONAS[line.persona || state.persona] || PERSONAS[state.persona];
@@ -446,16 +490,108 @@ const Engine = {
     u.volume = clamp(0, 1, (state.vol/100) * persona.vol * intensity.vol);
     return u;
   },
-  speak(text, line, onend, onstart){
-    this.synth.cancel();
-    const u = this.buildUtterance(text, line);
-    u.onstart = onstart;
-    u.onend = () => onend && onend(false);
-    u.onerror = () => onend && onend(true);
-    this.synth.speak(u);
-    return u;
+
+  edgeProsody(line){
+    const persona = PERSONAS[line.persona || state.persona] || PERSONAS[state.persona];
+    const intensity = INTENSITIES[line.intensity || state.intensity] || INTENSITIES[state.intensity];
+    const pitchHz = clamp(-60, 60, state.pitch + (persona.pitch*4) + (intensity.pitch*4));
+    const ratePct = clamp(-60, 120, (state.rate - 100) + Math.round((persona.rate - 1)*100) + Math.round((intensity.rate - 1)*100));
+    const volPct = clamp(-60, 40, (state.vol - 100) + Math.round((persona.vol - 1)*100) + Math.round((intensity.vol - 1)*100));
+    return { pitch: Math.round(pitchHz), rate: ratePct, volume: volPct };
   },
-  stop(){ this.synth.cancel(); }
+
+  edgeCacheKey(text, line){
+    return JSON.stringify([text, state.voiceURI, this.edgeProsody(line)]);
+  },
+
+  async fetchEdgeAudio(text, line){
+    const key = this.edgeCacheKey(text, line);
+    if(this.audioCache.has(key)) return { blob: this.audioCache.get(key), key };
+    const voice = state.voiceURI && EDGE_VOICES.some(v => v.shortName === state.voiceURI) ? state.voiceURI : DEFAULT_EDGE_VOICE;
+    const p = this.edgeProsody(line);
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 20000);
+    try{
+      const r = await fetch(EDGE_API, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ text, voice, pitch:p.pitch, rate:p.rate, volume:p.volume }),
+        signal: ctrl.signal
+      });
+      clearTimeout(to);
+      if(!r.ok) throw new Error("Edge TTS error " + r.status);
+      const blob = await r.blob();
+      if(!blob.size) throw new Error("Empty audio");
+      this.audioCache.set(key, blob);
+      return { blob, key };
+    }catch(e){
+      clearTimeout(to);
+      throw e;
+    }
+  },
+
+  async play(text, line){
+    const gen = ++this.gen;
+    if(this.mode === "edge"){
+      let data;
+      try{
+        data = await this.fetchEdgeAudio(text, line);
+      }catch(e){
+        if(gen !== this.gen) return;
+        this.mode = "browser";
+        return this.playBrowser(text, line);
+      }
+      if(gen !== this.gen) return;
+      return this.playBlob(data.blob, data.key);
+    }
+    return this.playBrowser(text, line);
+  },
+
+  playBrowser(text, line){
+    return new Promise((resolve) => {
+      this.synth.cancel();
+      const u = this.buildUtterance(text, line);
+      u.onend = () => resolve();
+      u.onerror = () => resolve();
+      u.oncancel = () => resolve();
+      this.synth.speak(u);
+    });
+  },
+
+  playBlob(blob, key){
+    const gen = this.gen;
+    return new Promise((resolve) => {
+      this.clearAudio();
+      const url = URL.createObjectURL(blob);
+      const a = new Audio(url);
+      this.currentAudio = a;
+      this.currentUrl = url;
+      this.cacheKey = key;
+      this.pending = { resolve };
+      const done = () => {
+        if(this.pending){ this.pending = null; }
+        if(gen === this.gen) resolve();
+      };
+      a.onended = done;
+      a.onerror = done;
+      a.onpause = done;
+      a.play().catch(done);
+    });
+  },
+
+  clearAudio(){
+    if(this.currentAudio){ try{ this.currentAudio.pause(); this.currentAudio.onended = null; this.currentAudio.onerror = null; this.currentAudio.onpause = null; }catch(e){} }
+    if(this.currentUrl){ URL.revokeObjectURL(this.currentUrl); }
+    this.currentAudio = null;
+    this.currentUrl = null;
+  },
+
+  stop(){
+    this.gen++;
+    if(this.pending){ const r = this.pending.resolve; this.pending = null; r(); }
+    this.clearAudio();
+    this.synth.cancel();
+  }
 };
 
 function clamp(a,b,v){ return Math.max(a, Math.min(b, v)); }
@@ -492,19 +628,25 @@ function generateScript(){
 function splitIntoLines(){
   const text = $("scriptText").value.trim();
   if(!text){ toast("Walang laman ang script."); return; }
+  const MAX = 240;
   const parts = text.split(/\n+/).map(s => s.trim()).filter(Boolean);
-  let sentences = [];
+  const sentences = [];
+  const pushSent = s => {
+    const t = s.trim();
+    if(!t) return;
+    if(t.length <= MAX){ sentences.push(t); return; }
+    for(let i=0;i<t.length;i+=MAX){ sentences.push(t.slice(i, i+MAX).trim()); }
+  };
   parts.forEach(p => {
-    if(p.length < 240){ sentences.push(p); }
-    else {
-      const seg = p.split(/(?<=[.!?â€¦])\s+/).map(s => s.trim()).filter(Boolean);
-      let cur = "";
-      seg.forEach(s => {
-        if((cur + " " + s).length < 240){ cur = (cur + " " + s).trim(); }
-        else { if(cur) sentences.push(cur); cur = s; }
-      });
-      if(cur) sentences.push(cur);
-    }
+    const seg = p.match(/[^.!?…]+[.!?…]+["')\]]*|[^.!?…]+$/g) || [p];
+    let cur = "";
+    seg.forEach(s => {
+      s = s.trim();
+      if(!s) return;
+      if((cur + " " + s).length <= MAX){ cur = (cur + " " + s).trim(); }
+      else { pushSent(cur); cur = s; }
+    });
+    if(cur) pushSent(cur);
   });
   state.lines = sentences.map(t => ({
     id:nextLineId(), text:t,
@@ -568,15 +710,28 @@ function renderIntensities(){
 
 function populateVoiceSelect(){
   const sel = $("voiceSelect");
+  sel.innerHTML = "";
+  if(Engine.mode === "edge"){
+    $("voiceModeHint").textContent = "Natural neural voice via free Edge TTS (walang API key).";
+    EDGE_VOICES.forEach(v => {
+      const o = document.createElement("option");
+      o.value = v.shortName;
+      o.textContent = v.label;
+      if(v.shortName === state.voiceURI) o.selected = true;
+      sel.appendChild(o);
+    });
+    if(!EDGE_VOICES.some(v => v.shortName === state.voiceURI)) state.voiceURI = DEFAULT_EDGE_VOICE;
+    return;
+  }
+  $("voiceModeHint").textContent = "Browser TTS fallback (lokal o offline). Para sa natural na boses, i-deploy sa Vercel.";
   const prev = state.voiceURI;
   const picked = Engine.pickVoice();
   const preferred = picked ? picked.voiceURI : null;
-  sel.innerHTML = "";
-  if(!state.voiceURI) state.voiceURI = preferred;
+  if(!state.voiceURI || !Engine.voices.some(v => v.voiceURI === state.voiceURI)) state.voiceURI = preferred;
   Engine.voices.forEach(v => {
     const o = document.createElement("option");
     o.value = v.voiceURI;
-    o.textContent = v.name + " â€” " + v.lang + (v.localService ? " (local)" : " (online)");
+    o.textContent = v.name + " — " + v.lang + (v.localService ? " (local)" : " (online)");
     if(v.voiceURI === state.voiceURI) o.selected = true;
     sel.appendChild(o);
   });
@@ -603,16 +758,16 @@ function renderLines(){
         <textarea class="lineText" spellcheck="false">${esc(line.text)}</textarea>
       </div>
       <div class="acts">
-        <button class="btn primary sm playOne" title="Play">â–¶</button>
+        <button class="btn primary sm playOne" title="Play">▶</button>
         <select class="linePersona">${optsP}</select>
         <select class="lineIntensity">${optsI}</select>
         <select class="linePause">
           ${[300,600,900,1200,1500,2000,2500].map(p => `<option value="${p}" ${p===line.pauseAfterMs?"selected":""}>${p}ms pause</option>`).join("")}
         </select>
         <div class="acts-side">
-          <button class="btn ghost sm moveUp" ${idx===0?"disabled":""}>â†‘</button>
-          <button class="btn ghost sm moveDown" ${idx===state.lines.length-1?"disabled":""}>â†“</button>
-          <button class="btn ghost sm delOne">âœ•</button>
+          <button class="btn ghost sm moveUp" ${idx===0?"disabled":""}>↑</button>
+          <button class="btn ghost sm moveDown" ${idx===state.lines.length-1?"disabled":""}>↓</button>
+          <button class="btn ghost sm delOne">✕</button>
         </div>
       </div>
       <div class="vis">
@@ -669,41 +824,54 @@ function setViz(level){
 }
 function idleViz(){ vizBars.forEach(b => b.style.height = "4px"); }
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 async function playLine(id){
   const line = state.lines.find(l => l.id === id);
   if(!line) return;
   stopPlayback(false);
+  state.playing = true;
   state.playingId = id;
   markPlaying(id);
-  Engine.speak(line.text, line, (err) => {
+  setStatus("Playing line...");
+  try{
+    await Engine.play(line.text, line);
+  }catch(e){
+    setStatus("Error playing line.");
+  }
+  if(state.playingId === id){
     state.playingId = null;
     markPlaying(null);
     idleViz();
-    setStatus(err ? "Error playing line." : "Done.");
-  }, () => setStatus("Playing line..."));
-  setStatus("Playing line...");
+    setStatus("Done.");
+  }
 }
 
-function playAll(){
+async function playAll(){
   if(state.playing){ stopPlayback(false); return; }
   if(!state.lines.length){ toast("Wala pang lines. Generate o split muna."); return; }
   state.playing = true;
   state.stopFlag = false;
   $("btnPlayAll").textContent = "Stop";
-  playNext(0);
-}
-
-function playNext(idx){
-  if(state.stopFlag || idx >= state.lines.length){ stopPlayback(true); return; }
-  const line = state.lines[idx];
-  state.playingId = line.id;
-  markPlaying(line.id);
-  setStatus(`Line ${idx+1}/${state.lines.length}...`);
-  Engine.speak(line.text, line, (err) => {
-    if(state.stopFlag) return;
-    if(err){ setStatus("Error sa isang line."); stopPlayback(true); return; }
-    setTimeout(() => playNext(idx+1), line.pauseAfterMs || 900);
-  });
+  try{
+    for(let i=0;i<state.lines.length;i++){
+      if(state.stopFlag) break;
+      const line = state.lines[i];
+      state.playingId = line.id;
+      markPlaying(line.id);
+      setStatus(`Line ${i+1}/${state.lines.length}...`);
+      try{
+        await Engine.play(line.text, line);
+      }catch(e){
+        setStatus("Error sa isang line.");
+        break;
+      }
+      if(state.stopFlag) break;
+      if(line.pauseAfterMs) await sleep(line.pauseAfterMs);
+    }
+  }finally{
+    if(state.playing) stopPlayback(true);
+  }
 }
 
 function stopPlayback(resetBtn){
@@ -714,7 +882,7 @@ function stopPlayback(resetBtn){
   markPlaying(null);
   idleViz();
   $("btnPlayAll").textContent = "Play All";
-  if(resetBtn){ setStatus("Stopped."); } else { setStatus("Stopped."); }
+  if(resetBtn){ setStatus("Stopped."); }
 }
 
 function markPlaying(id){
@@ -722,7 +890,7 @@ function markPlaying(id){
   if(id){ const el = document.getElementById("ln_"+id); if(el) el.classList.add("playing"); }
 }
 
-function setStatus(t){ $("status").innerHTML = "<b>â—</b> " + esc(t); }
+function setStatus(t){ $("status").innerHTML = "<b>●</b> " + esc(t); }
 
 setInterval(() => { if(state.playing) setViz(0.25 + Math.random()*0.35); }, 90);
 
@@ -731,76 +899,62 @@ setInterval(() => { if(state.playing) setViz(0.25 + Math.random()*0.35); }, 90);
 async function recordAndDownload(){
   if(state.recording) return;
   if(!state.lines.length){ toast("Wala pang lines na i-record."); return; }
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
-    toast("Hindi supported ng browser ang tab-audio capture. Gumamit ng Chrome o Edge.");
-    return;
-  }
-  if(!window.isSecureContext){
-    toast("Kailangan ng localhost o HTTPS para sa download. I-run ang start-server.ps1.");
+  if(Engine.mode === "browser"){
+    toast("Natural voice .wav kailangan ng live app (Edge TTS). Gumamit ng browser Play All kung offline.");
     return;
   }
   state.recording = true;
   $("btnRecord").disabled = true;
-  $("recStatus").textContent = "Piliin ang tab na ito at i-check ang 'Share tab audio' / 'Share system audio', tapos Share.";
-  let stream;
-  try {
-    stream = await navigator.mediaDevices.getDisplayMedia({ video:false, audio:true });
-  } catch(e){
-    state.recording = false;
-    $("btnRecord").disabled = false;
-    $("recStatus").textContent = "Cancelled. Paki-share muli ang tab na may audio.";
-    return;
-  }
-  const audioTrack = stream.getAudioTracks()[0];
-  if(!audioTrack){ toast("Walang audio track sa napiling tab."); stream.getTracks().forEach(t=>t.stop()); state.recording=false; $("btnRecord").disabled=false; return; }
-  const audioStream = new MediaStream([audioTrack]);
-  const rec = new MediaRecorder(audioStream);
-  const chunks = [];
-  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
-  rec.onstop = () => {
-    const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
-    stream.getTracks().forEach(t => t.stop());
-    blobToAudioBuffer(blob).then(buf => {
-      const wav = audioBufferToWav(buf);
-      downloadBlob(wav, "Don_Bossing_voiceover.wav");
-      state.recording = false;
-      $("btnRecord").disabled = false;
-      $("recStatus").textContent = "Na-download na ang .wav file! Unlimited pa rin ang output mo, bossing.";
-      toast("Download complete! .wav ready.");
-    }).catch(() => {
-      downloadBlob(blob, "Don_Bossing_voiceover." + (blob.type.includes("ogg") ? "ogg" : "webm"));
-      state.recording = false;
-      $("btnRecord").disabled = false;
-      $("recStatus").textContent = "Na-download bilang fallback format. Para sa .wav, gumamit ng Chrome/Edge.";
-    });
-  };
-  rec.start();
+  $("recStatus").textContent = "Ginagawa ang .wav file...";
   stopPlayback(false);
   state.playing = true;
-  setStatus("Recording...");
-  await playAllRaw();
-  setTimeout(() => { if(rec.state !== "inactive") rec.stop(); }, 600);
-}
-
-function playAllRaw(){
-  return new Promise((resolve) => {
-    let idx = 0;
-    const next = () => {
-      if(idx >= state.lines.length){ resolve(); return; }
-      const line = state.lines[idx++];
-      Engine.speak(line.text, line, () => setTimeout(next, line.pauseAfterMs || 900));
-    };
-    next();
-  });
-}
-
-function blobToAudioBuffer(blob){
-  return new Promise((resolve, reject) => {
+  setStatus("Generating .wav...");
+  try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const fr = new FileReader();
-    fr.onload = () => ctx.decodeAudioData(fr.result, resolve, reject);
-    fr.readAsArrayBuffer(blob);
-  });
+    const sampleRate = ctx.sampleRate;
+    const buffers = [];
+    for(let i=0;i<state.lines.length;i++){
+      if(state.stopFlag) break;
+      const line = state.lines[i];
+      $("recStatus").textContent = `Line ${i+1}/${state.lines.length}: ginagawa...`;
+      const data = await Engine.fetchEdgeAudio(line.text, line);
+      const ab = await data.blob.arrayBuffer();
+      const buf = await ctx.decodeAudioData(ab);
+      buffers.push(buf);
+      if(line.pauseAfterMs){
+        buffers.push(silenceBuffer(ctx, line.pauseAfterMs));
+      }
+    }
+    $("recStatus").textContent = "Pinagsasama ang audio...";
+    const totalLen = buffers.reduce((a,b) => a + b.length, 0);
+    const out = ctx.createBuffer(2, totalLen, sampleRate);
+    let offset = 0;
+    for(const b of buffers){
+      for(let c=0;c<Math.min(2, b.numberOfChannels);c++){
+        out.copyToChannel(b.getChannelData(c), c, offset);
+      }
+      offset += b.length;
+    }
+    const wav = audioBufferToWav(out);
+    downloadBlob(wav, "Don_Bossing_voiceover.wav");
+    $("recStatus").textContent = "Na-download na ang .wav file! Unlimited pa rin ang output mo, bossing.";
+    toast("Download complete! .wav ready.");
+  }catch(e){
+    $("recStatus").textContent = "Hindi nagawa ang .wav: " + (e && e.message ? e.message : e);
+  }finally{
+    state.recording = false;
+    $("btnRecord").disabled = false;
+    state.playing = false;
+    idleViz();
+    setStatus("Ready.");
+  }
+}
+
+function silenceBuffer(ctx, ms){
+  const len = Math.round(ctx.sampleRate * ms / 1000);
+  const b = ctx.createBuffer(1, len, ctx.sampleRate);
+  b.getChannelData(0).fill(0);
+  return b;
 }
 
 function audioBufferToWav(buffer){
@@ -890,7 +1044,6 @@ function bindEvents(){
   };
   bindSlider("pitch", v => { state.pitch = parseInt(v,10); $("pitchVal").textContent = (v>0?"+":"") + v; });
   bindSlider("rate", v => { state.rate = parseInt(v,10); $("rateVal").textContent = (v/100).toFixed(2); });
-  bindSlider("bass", v => { state.bass = parseInt(v,10); $("bassVal").textContent = v + "dB"; });
   bindSlider("vol", v => { state.vol = parseInt(v,10); $("volVal").textContent = v + "%"; });
 
   $("autoEmotion").onchange = e => { state.autoEmotion = e.target.checked; renderLines(); };
@@ -901,9 +1054,7 @@ function init(){
   renderTopicChips();
   renderPersonas();
   renderIntensities();
-  populateVoiceSelect();
-  Engine.loadVoices();
-  Engine.synth.onvoiceschanged = () => Engine.loadVoices();
+  Engine.init();
   for(let i=0;i<vizBars.length;i++) vizBars[i].style.height = "4px";
   generateScript();
 }
