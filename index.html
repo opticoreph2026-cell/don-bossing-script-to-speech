@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Don Bossing - Filipino Billionaire Script-to-Speech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0f;
+    --panel:#12121a;
+    --panel2:#181824;
+    --line:#232333;
+    --gold:#d4af37;
+    --gold2:#f5d66b;
+    --text:#eaeaf2;
+    --muted:#8a8aa0;
+    --green:#3ddc84;
+    --red:#ff5a5f;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%}
+  body{padding-bottom:60px}
+  ::selection{background:var(--gold);color:#000}
+  .serif{font-family:'Playfair Display',serif}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+
+  header{background:linear-gradient(180deg,#0e0e16,#0a0a0f);border-bottom:1px solid var(--line);padding:22px 0}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:46px;height:46px;border-radius:12px;background:radial-gradient(circle at 30% 30%,var(--gold2),var(--gold));display:grid;place-items:center;font-weight:900;font-size:22px;color:#000;box-shadow:0 4px 20px rgba(212,175,55,.35)}
+  .brand h1{font-size:26px;letter-spacing:.5px;font-weight:800}
+  .brand h1 em{color:var(--gold);font-style:normal}
+  .brand p{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .badge.gold{border-color:rgba(212,175,55,.4);color:var(--gold)}
+  .badge.green{border-color:rgba(61,220,132,.35);color:var(--green)}
+
+  .hero{text-align:center;padding:40px 20px 28px}
+  .hero h2{font-size:clamp(26px,4vw,44px);font-weight:800;line-height:1.15}
+  .hero h2 span{color:var(--gold)}
+  .hero p{color:var(--muted);max-width:640px;margin:12px auto 0;font-size:15px;line-height:1.6}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  @media(max-width:960px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .card h3{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .card h3 .n{width:22px;height:22px;border-radius:6px;background:rgba(212,175,55,.15);color:var(--gold);display:grid;place-items:center;font-size:11px}
+
+  label.lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 7px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:var(--text)}
+  .chip:hover{border-color:var(--gold);color:var(--gold)}
+  .chip.active{background:var(--gold);color:#000;border-color:var(--gold)}
+  .chip small{display:block;font-size:10px;opacity:.7;font-weight:600;margin-top:1px}
+
+  textarea{width:100%;min-height:150px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:14px;font-size:14px;line-height:1.65;font-family:inherit;resize:vertical}
+  textarea:focus{outline:none;border-color:var(--gold)}
+  input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font-size:13.5px;font-family:inherit}
+  input[type=text]:focus{outline:none;border-color:var(--gold)}
+  select{background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:11px 12px;font-size:13.5px;font-family:inherit;width:100%}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;border:none;border-radius:12px;cursor:pointer;padding:13px 18px;font-size:13.5px;transition:.15s;font-family:inherit}
+  .btn.primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;box-shadow:0 6px 24px rgba(212,175,55,.3)}
+  .btn.primary:hover{transform:translateY(-1px)}
+  .btn.ghost{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+  .btn.ghost:hover{border-color:var(--gold);color:var(--gold)}
+  .btn.sm{padding:8px 12px;font-size:12px;border-radius:10px}
+  .btn.green{background:var(--green);color:#000}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+
+  .meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+  .meta b{color:var(--text)}
+
+  .persona-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px}
+  .persona{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel2);transition:.15s;text-align:left}
+  .persona:hover{border-color:var(--gold)}
+  .persona.active{border-color:var(--gold);background:rgba(212,175,55,.08)}
+  .persona b{display:block;font-size:13px}
+  .persona .tag{font-size:10.5px;color:var(--gold);font-weight:700;display:block;margin-top:2px}
+  .persona .desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4;display:block}
+
+  .intensity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  @media(max-width:560px){.intensity-grid{grid-template-columns:1fr}}
+  .intensity{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .intensity:hover{border-color:var(--gold)}
+  .intensity.active{border-color:var(--gold);background:rgba(212,175,55,.08)}
+  .intensity .head{display:flex;justify-content:space-between;align-items:center}
+  .intensity b{font-size:13px}
+  .intensity .tag{font-size:10.5px;color:var(--gold);font-weight:700}
+  .intensity .db{font-size:10px;color:var(--muted);font-weight:700;padding:3px 7px;border-radius:999px;background:rgba(212,175,55,.12);color:var(--gold)}
+  .intensity .desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4;display:block}
+
+  .sliders{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+  @media(max-width:560px){.sliders{grid-template-columns:1fr}}
+  .slider label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+  .slider label b{color:var(--text);font-family:monospace}
+  input[type=range]{width:100%;appearance:none;height:5px;border-radius:99px;background:var(--line);outline:none}
+  input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #000}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #000}
+
+  .lines{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  .line{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .line.playing{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+  .line .top{display:flex;gap:10px;align-items:flex-start}
+  .line .idx{font-size:11px;font-weight:800;color:var(--gold);min-width:22px;padding-top:4px;text-align:center}
+  .line textarea{min-height:56px;flex:1;padding:10px;font-size:13.5px}
+  .line .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
+  .line .acts select{width:auto;flex:1;min-width:120px;padding:7px 10px;font-size:12px}
+  .line .pause{font-size:11px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:6px}
+  .line .vis{width:100%;margin-top:8px;font-size:11px;color:var(--muted)}
+  .line .vis input{font-size:12px;padding:8px 10px}
+
+  .playbar{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,18,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 20px;z-index:50}
+  .playbar .inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .viz{display:flex;gap:3px;align-items:flex-end;height:34px;flex:1;min-width:120px}
+  .viz .bar{width:5px;border-radius:2px;background:linear-gradient(180deg,var(--gold2),var(--gold));height:4px;transition:height .08s ease}
+  .status{font-size:12px;color:var(--muted);min-width:130px}
+  .status b{color:var(--gold)}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:960px){.grid2{grid-template-columns:1fr}}
+
+  .kit-item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .kit-item b{color:var(--gold);display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+
+  .toast{position:fixed;top:18px;right:18px;z-index:99;background:var(--panel2);border:1px solid var(--gold);color:var(--text);padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none}
+  .toast.show{opacity:1;transform:none}
+
+  .footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 20px;line-height:1.7}
+  .footer b{color:var(--gold)}
+
+  .hint{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:8px}
+  .hidden{display:none!important}
+  .toggle-row{display:flex;align-items:center;gap:10px}
+  .switch{position:relative;width:40px;height:22px;flex:none}
+  .switch input{opacity:0;width:0;height:0}
+  .slid{position:absolute;inset:0;background:var(--line);border-radius:99px;cursor:pointer;transition:.2s}
+  .slid:before{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+  .switch input:checked + .slid{background:var(--gold)}
+  .switch input:checked + .slid:before{transform:translateX(18px);background:#000}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap brand">
+    <div class="logo">B</div>
+    <div style="flex:1">
+      <h1>DON <em>BOSSING</em></h1>
+      <p>Filipino Billionaire Script-to-Speech Studio</p>
+    </div>
+    <div class="badges">
+      <span class="badge gold">Unlimited Output</span>
+      <span class="badge green">Tagalog Fluent</span>
+      <span class="badge">Faceless Model</span>
+      <span class="badge">No API Key</span>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <h2 class="serif">Sikolohiya ng Pera, <span>Diskarte</span>, at Buhay Pinoy</h2>
+  <p>I-convert ang iyong script sa boses ng isang Filipino male billionaire na matatas sa Tagalog. Pumili ng emosyon at vocal intensity para sa tamang mood ng iyong YouTube content.</p>
+</div>
+
+<div class="wrap grid">
+
+  <section class="card">
+    <h3><span class="n">1</span> Script</h3>
+
+    <label class="lbl">Topic / Paksa</label>
+    <div class="chips" id="topicChips"></div>
+
+    <label class="lbl">Video Format</label>
+    <div class="chips" id="formatChips">
+      <div class="chip active" data-format="shorts">Shorts / Reels</div>
+      <div class="chip" data-format="longform">Longform</div>
+    </div>
+
+    <label class="lbl">Custom Prompt (Opsyonal)</label>
+    <input type="text" id="customPrompt" placeholder="e.g. Utang na-loob at kung bakit tayo natatakot yumaman..." />
+
+    <label class="lbl">Script / Script Text</label>
+    <textarea id="scriptText" placeholder="Isulat o i-paste ang script dito..."></textarea>
+
+    <div class="meta">
+      <span><b id="wordCount">0</b> words</span>
+      <span><b id="charCount">0</b> chars</span>
+      <span>~<b id="estDur">0:00</b> est.</span>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary" id="btnGenerate">Generate Sample Script</button>
+      <button class="btn ghost" id="btnSplit">Split into Lines</button>
+      <button class="btn ghost" id="btnClear">Clear</button>
+    </div>
+    <div class="hint">Kailangan mo ng pang-matagalang output? Ang browser TTS ay <b>walang limitasyon</b> â€” generate ka lang nang generate.</div>
+  </section>
+
+  <section class="card">
+    <h3><span class="n">2</span> Voice &amp; Emotion</h3>
+
+    <label class="lbl">Persona / Emosyon ng Boses</label>
+    <div class="persona-grid" id="personaGrid"></div>
+
+    <label class="lbl" style="margin-top:16px">Vocal Intensity Level</label>
+    <div class="intensity-grid" id="intensityGrid"></div>
+
+    <label class="lbl" style="margin-top:16px">Browser Voice</label>
+    <select id="voiceSelect"></select>
+
+    <div class="sliders" style="margin-top:14px">
+      <div class="slider"><label>Pitch <b id="pitchVal">+0</b></label><input type="range" id="pitch" min="-20" max="20" value="0" /></div>
+      <div class="slider"><label>Rate <b id="rateVal">1.00</b></label><input type="range" id="rate" min="50" max="200" value="100" /></div>
+      <div class="slider"><label>Bass Boost <b id="bassVal">6dB</b></label><input type="range" id="bass" min="0" max="18" value="6" /></div>
+      <div class="slider"><label>Volume <b id="volVal">100%</b></label><input type="range" id="vol" min="0" max="150" value="100" /></div>
+    </div>
+
+    <label class="lbl" style="margin-top:16px">Auto-Apply Emotion Per Line</label>
+    <div class="toggle-row">
+      <label class="switch"><input type="checkbox" id="autoEmotion" checked /><span class="slid"></span></label>
+      <span class="hint" style="margin:0">Pipiliin ng bawat linya ang persona nito. I-off para i-lock lahat sa global persona.</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="wrap" style="margin-top:18px">
+  <section class="card">
+    <h3><span class="n">3</span> Lines / Mga Linya</h3>
+    <div class="lines" id="lineList"></div>
+    <div class="toolbar">
+      <button class="btn ghost sm" id="btnAddLine">+ Add Line</button>
+      <button class="btn ghost sm" id="btnRegenerateLineIds">Re-index</button>
+    </div>
+  </section>
+</div>
+
+<div class="wrap grid2" style="margin-top:18px">
+  <section class="card">
+    <h3><span class="n">4</span> Production Kit (Faceless YouTube)</h3>
+    <div class="kit-item" style="margin-bottom:10px"><b>Thumbnail Ideas</b><span id="kitThumbs"></span></div>
+    <div class="kit-item"><b>B-Roll / Visual Prompts</b><span id="kitBroll"></span></div>
+  </section>
+  <section class="card">
+    <h3><span class="n">5</span> Export &amp; Download</h3>
+    <label class="lbl">Unlimited Voiceover</label>
+    <p class="hint" style="margin-bottom:12px">Playback at download ay libre at walang limitasyon. Para sa <b>.wav</b> na file, i-click ang Record &amp; Download at piliin ang tab na ito (i-check ang "Share tab audio" / "Share system audio").</p>
+    <div class="toolbar">
+      <button class="btn green" id="btnRecord">Record &amp; Download .wav</button>
+      <button class="btn ghost" id="btnCopyScript">Copy Script</button>
+      <button class="btn ghost" id="btnCopyLines">Copy Lines (JSON)</button>
+      <button class="btn ghost" id="btnExportKit">Copy Production Kit</button>
+    </div>
+    <div class="hint" id="recStatus" style="margin-top:10px"></div>
+  </section>
+</div>
+
+<div class="footer">
+  <b>DON BOSSING</b> â€” Sikolohiya ng Pera, Diskarte, at Buhay Pinoy.<br/>
+  Built for faceless YouTube creators. Free, unlimited, no API key required.
+</div>
+
+<div class="playbar">
+  <div class="inner">
+    <button class="btn primary sm" id="btnPlayAll">Play All</button>
+    <button class="btn ghost sm" id="btnStop">Stop</button>
+    <div class="viz" id="viz"></div>
+    <div class="status" id="status"><b>Ready.</b> Pumili ng script.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+/* ==================== DATA ==================== */
+
+const PERSONAS = {
+  mayabang_may_laman:{id:"mayabang_may_laman",label:"Confident Billionaire",tagalog:"Mayabang pero May Laman",desc:"Unshakable swagger backed by solid wisdom and real financial flex.",pitch:1.5,rate:1.04,vol:1.0},
+  kalmado_seryoso:{id:"kalmado_seryoso",label:"Calm Executive",tagalog:"Kalmado at Seryoso",desc:"Low, smooth, precise delivery. Heavy psychological authority.",pitch:-2.5,rate:0.92,vol:1.0},
+  galit_sa_tamad:{id:"galit_sa_tamad",label:"Tough Love Direct",tagalog:"Galit sa Tamad (Wake Up Call)",desc:"Aggressive, urgent, direct attack on poverty mindset and excuses.",pitch:1.0,rate:1.22,vol:1.12},
+  kwento_storyteller:{id:"kwento_storyteller",label:"Engaging Storyteller",tagalog:"Kwento / Narrative",desc:"Warm, conversational pacing that pulls the listener into a parable.",pitch:0.0,rate:1.0,vol:1.0},
+  mahiwaga_secret:{id:"mahiwaga_secret",label:"Suspenseful Reveal",tagalog:"Mahiwaga / Psychological Secret",desc:"Lowered voice, strategic pauses, building intrigue around money traps.",pitch:-3.5,rate:0.85,vol:0.9},
+  kapatid_mentor:{id:"kapatid_mentor",label:"Empathetic Mentor",tagalog:"Warm Brotherly Advice",desc:"Heart-to-heart talk encouraging the Pinoy worker to step up without judgment.",pitch:-1.0,rate:0.96,vol:1.0}
+};
+
+const INTENSITIES = {
+  subtle_whisper:{id:"subtle_whisper",label:"Subtle / Secret Tone",tagalog:"Pabulong / Malalim",desc:"Intimate, suspenseful, secret wealth tip delivery.",db:-2,vol:0.75,rate:0.9,pitch:-1.5},
+  normal_dialogue:{id:"normal_dialogue",label:"Normal Dialogue",tagalog:"Kwentuhan / Conversational",desc:"Balanced, clear, natural billionaire monologue.",db:0,vol:1.0,rate:1.0,pitch:0},
+  high_hype:{id:"high_hype",label:"High Energy / Hook",tagalog:"Mataas na Enerhiya",desc:"Dynamic, projecting voice for YouTube Shorts retention.",db:3,vol:1.15,rate:1.1,pitch:1},
+  extreme_boss:{id:"extreme_boss",label:"Explosive Boss Energy",tagalog:"Sagad na Bossing Energy",desc:"Maximum authority, dominant projection, powerful emphasis.",db:6,vol:1.28,rate:1.18,pitch:1.8}
+};
+
+const TOPICS = {
+  sikolohiya_ng_pera:{
+    label:"Sikolohiya ng Pera", tag:"Psychology of Money",
+    hook:"Alam mo ba kung bakit kahit lumaki sweldo mo, baon ka pa rin sa credit card?",
+    lines:[
+      {text:"Makinig ka nang mabuti, bossing: Ang problema mo ay hindi kawalan ng pera, kundi kawalan ng disiplina sa utak mo.",emotion:"galit_sa_tamad",intensity:"high_hype",pauseAfterMs:1000,visualPrompt:"Close up typing on a high-end laptop with credit card swipe overlays."},
+      {text:"Ang pera ay emosyon. Kapag hindi mo kontrolado ang pakiramdam mo, kontrolado ka ng tindahan.",emotion:"mayabang_may_laman",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Cinematic B-roll of Manila skylines transitioning to glowing gold brain synapse graphics."},
+      {text:"Ang mahirap at middle class, bibili agad ng bagong phone o sapatos para magmukhang mayaman.",emotion:"mayabang_may_laman",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Luxury retail store glass display case with glowing price tags."},
+      {text:"Ang mayaman, bumibili ng assets. Ang mahirap, bumibili ng liabilities na kunwari ay assets.",emotion:"kalmado_seryoso",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Flow chart graphics showing Income -> Expense vs Income -> Assets -> Cashflow."},
+      {text:"Gusto mong magkaroon ng totoong diskarte? Unahin mo ang asset, tsaka na ang flex.",emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1500,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."}
+    ],
+    thumbs:["SWELDO TRAP!","3 SECRET NG MAYAMAN","UTANG NA-LOOB TRAP"],
+    broll:"Luxury Manila penthouse balcony. Gold brain synapse graphics. Flow charts ng Income vs Assets."
+  },
+  diskarte:{
+    label:"Diskarte", tag:"Strategy & Hustle",
+    hook:"Wala kang puhunan? Huling beses mo nang idahilan yan ngayong araw, bossing.",
+    lines:[
+      {text:"Wala kang puhunan? Huling beses mo nang idahilan yan ngayong araw, bossing.",emotion:"galit_sa_tamad",intensity:"extreme_boss",pauseAfterMs:1200,visualPrompt:"Dramatic zoom on a sleek smartphone resting beside a cup of black espresso."},
+      {text:"Ang diskarte ay hindi swerte. Ito ay preparasyon na nakilala ang oportunidad.",emotion:"kalmado_seryoso",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Executive wearing tailored suit looking out the glass window of a high-rise in BGC."},
+      {text:"Hindi mo kailangan ng milyon para magsimula. Kailangan mo ng utak, tibay, at tamang galaw.",emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1000,visualPrompt:"Glowing 3D icons of Time, Knowledge, and Network connecting in a web."},
+      {text:"Ang pera ay dumadaloy sa taong may sistema. Walang sistema, walang daloy.",emotion:"mayabang_may_laman",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"3D animated bridge connecting buyer and seller with gold coin flow."},
+      {text:"Ulitin mo, boss: Ang negosyo ay hindi puhunan. Ang negosyo ay problema na hinahanapan mo ng solusyon.",emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1500,visualPrompt:"Close up of a luxury watch tapping on a polished mahogany desk in Manila."}
+    ],
+    thumbs:["ZERO CAPITAL DISKARTE","NO MONEY? NO PROBLEM","SISTEMA ANG TUNAY NA YAMAN"],
+    broll:"BGC skyscrapers. Mahogany desk na may luxury watch. Gold coin flows at network graphics."
+  },
+  buhay_pinoy:{
+    label:"Buhay Pinoy", tag:"Filipino Life & Money",
+    hook:"Bakit kahit nagtatrabaho ka nang magdamag, baon ka pa rin sa utang, bossing?",
+    lines:[
+      {text:"Kultura natin ang magpaka-martir sa trabaho. Pero tanong: yumayaman ka ba, o napapagod ka lang?",emotion:"galit_sa_tamad",intensity:"high_hype",pauseAfterMs:1000,visualPrompt:"B-roll of a young Filipino professional staring at a stack of bills in a modern condo."},
+      {text:"Ang pagiging manggagawa ay hindi sumpa. Ang pananatiling ignorante sa pera ang siyang sumpa.",emotion:"kwento_storyteller",intensity:"normal_dialogue",pauseAfterMs:1200,visualPrompt:"Dramatic shot of a yacht sailing in Palawan clear blue waters."},
+      {text:"Tandaan mo: ang bawat piso na kinikita mo, dapat may misyon.",emotion:"kapatid_mentor",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Flow chart graphics showing Income -> Expense vs Income -> Assets -> Cashflow."},
+      {text:"Huwag mong ipagpalit ang kalayaan mo sa kaginhawaan ng isang araw.",emotion:"kalmado_seryoso",intensity:"subtle_whisper",pauseAfterMs:1200,visualPrompt:"Don Bossing silhouette in a penthouse office looking down at city lights."},
+      {text:"Kapag ang Pinoy natutong mag-ipon at mag-invest, walang makakapigil sa atin.",emotion:"mayabang_may_laman",intensity:"extreme_boss",pauseAfterMs:1500,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."}
+    ],
+    thumbs:["MARTIR KA BA?","BUHAY PINOY, UTANG PINOY","KALAYAANG PINANSYAL"],
+    broll:"Palawan waters. Penthouse silhouette. City lights at gold coins sa slow motion."
+  }
+};
+
+const INTRO_LONG = "Tandaan mo ito, boss: ang kayamanan ay hindi nasusukat sa laman ng bulsa mo, kundi sa laman ng isip mo.";
+const OUTRO_SHORT = "Kung nakatulong ito sa'yo, i-share mo sa kapwa mo Pinoy. Dahil pag yumaman ang Pinoy, yayaman ang bayan.";
+
+/* ==================== STATE ==================== */
+
+const state = {
+  topic:"sikolohiya_ng_pera",
+  format:"shorts",
+  persona:"mayabang_may_laman",
+  intensity:"high_hype",
+  voiceURI:null,
+  pitch:0,
+  rate:100,
+  bass:6,
+  vol:100,
+  autoEmotion:true,
+  lines:[],
+  playing:false,
+  playingId:null,
+  stopFlag:false,
+  recording:false
+};
+
+let lineSeq = 0;
+const nextLineId = () => "line_" + (++lineSeq) + "_" + Date.now().toString(36);
+
+/* ==================== TTS ENGINE ==================== */
+
+const Engine = {
+  voices:[],
+  synth: window.speechSynthesis,
+  loadVoices(){
+    const v = this.synth.getVoices().slice();
+    if(v.length){ this.voices = v; populateVoiceSelect(); }
+  },
+  pickVoice(){
+    const list = this.voices;
+    const prefs = list.filter(v => (v.lang||"").toLowerCase().startsWith("fil") || (v.lang||"").toLowerCase().startsWith("tl"));
+    const malePhil = prefs.filter(v => !/\bfemale\b/i.test(v.name) && /male|gonzalo|angelo|juan|paolo|james/i.test(v.name));
+    const anyPhil = prefs[0];
+    const maleEng = list.filter(v => !/\bfemale\b/i.test(v.name) && /david|mark|george|james|daniel|guy|male/i.test(v.name));
+    const anyMale = list.find(v => !/\bfemale\b/i.test(v.name));
+    return (malePhil[0] || anyPhil || maleEng[0] || anyMale || list[0]) || null;
+  },
+  buildUtterance(text, line){
+    const voice = this.voices.find(v => v.voiceURI === state.voiceURI) || this.pickVoice();
+    const persona = PERSONAS[line.persona || state.persona] || PERSONAS[state.persona];
+    const intensity = INTENSITIES[line.intensity || state.intensity] || INTENSITIES[state.intensity];
+    const u = new SpeechSynthesisUtterance(text);
+    if(voice) u.voice = voice;
+    const basePitch = 1 + (state.pitch / 20);
+    const baseRate = state.rate / 100;
+    u.pitch = clamp(0.3, 2, basePitch + (persona.pitch/10) + (intensity.pitch/10));
+    u.rate = clamp(0.3, 4, baseRate * persona.rate * intensity.rate);
+    u.volume = clamp(0, 1, (state.vol/100) * persona.vol * intensity.vol);
+    return u;
+  },
+  speak(text, line, onend, onstart){
+    this.synth.cancel();
+    const u = this.buildUtterance(text, line);
+    u.onstart = onstart;
+    u.onend = () => onend && onend(false);
+    u.onerror = () => onend && onend(true);
+    this.synth.speak(u);
+    return u;
+  },
+  stop(){ this.synth.cancel(); }
+};
+
+function clamp(a,b,v){ return Math.max(a, Math.min(b, v)); }
+
+/* ==================== SCRIPT GENERATION ==================== */
+
+function generateScript(){
+  const topicId = state.topic;
+  const topic = TOPICS[topicId];
+  if(topicId !== "custom" && topic){
+    let lines = topic.lines.map(l => ({...l, id:nextLineId()}));
+    if(state.format === "longform"){
+      lines = [{text:INTRO_LONG,emotion:"kalmado_seryoso",intensity:"normal_dialogue",pauseAfterMs:900,visualPrompt:"Cinematic B-roll of Manila skylines."}, ...lines];
+    } else {
+      lines = lines.slice(0,4);
+    }
+    lines.push({text:OUTRO_SHORT,emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1200,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."});
+    const text = lines.map(l => l.text).join("\n");
+    $("scriptText").value = text;
+    state.lines = lines;
+    renderLines();
+    $("customPrompt").value = "";
+    renderKit(topicId);
+    updateCounts();
+    return;
+  }
+  const prompt = ($("customPrompt").value || "pera at diskarte para sa mga Pinoy").trim();
+  const text = "Tandaan mo ito, bossing: " + prompt + ". " + INTRO_LONG + " " + OUTRO_SHORT;
+  $("scriptText").value = text;
+  splitIntoLines();
+  renderKit("custom");
+}
+
+function splitIntoLines(){
+  const text = $("scriptText").value.trim();
+  if(!text){ toast("Walang laman ang script."); return; }
+  const parts = text.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  let sentences = [];
+  parts.forEach(p => {
+    if(p.length < 240){ sentences.push(p); }
+    else {
+      const seg = p.split(/(?<=[.!?â€¦])\s+/).map(s => s.trim()).filter(Boolean);
+      let cur = "";
+      seg.forEach(s => {
+        if((cur + " " + s).length < 240){ cur = (cur + " " + s).trim(); }
+        else { if(cur) sentences.push(cur); cur = s; }
+      });
+      if(cur) sentences.push(cur);
+    }
+  });
+  state.lines = sentences.map(t => ({
+    id:nextLineId(), text:t,
+    persona:null, intensity:null,
+    pauseAfterMs:900,
+    visualPrompt:""
+  }));
+  renderLines();
+}
+
+function renderKit(topicId){
+  const t = TOPICS[topicId];
+  if(t){
+    $("kitThumbs").textContent = t.thumbs.join("  |  ");
+    $("kitBroll").textContent = t.broll;
+  } else {
+    $("kitThumbs").textContent = "Generate a sample script para makita ang mga idea.";
+    $("kitBroll").textContent = "Generate a sample script para makita ang mga idea.";
+  }
+}
+
+/* ==================== RENDER ==================== */
+
+function renderTopicChips(){
+  const wrap = $("topicChips");
+  wrap.innerHTML = "";
+  const ids = Object.keys(TOPICS).concat(["custom"]);
+  ids.forEach(id => {
+    const t = TOPICS[id];
+    const el = document.createElement("div");
+    el.className = "chip" + (id === state.topic ? " active" : "");
+    el.innerHTML = t ? `<b>${t.label}</b><small>${t.tag}</small>` : `<b>Custom</b><small>Sarili mong topic</small>`;
+    el.onclick = () => { state.topic = id; renderTopicChips(); if(id!=="custom") generateScript(); };
+    wrap.appendChild(el);
+  });
+}
+
+function renderPersonas(){
+  const wrap = $("personaGrid");
+  wrap.innerHTML = "";
+  Object.values(PERSONAS).forEach(p => {
+    const el = document.createElement("button");
+    el.className = "persona" + (p.id === state.persona ? " active" : "");
+    el.innerHTML = `<b>${p.label}</b><span class="tag">${p.tagalog}</span><span class="desc">${p.desc}</span>`;
+    el.onclick = () => { state.persona = p.id; renderPersonas(); if(!state.autoEmotion) applyPersonaToAll(); };
+    wrap.appendChild(el);
+  });
+}
+
+function renderIntensities(){
+  const wrap = $("intensityGrid");
+  wrap.innerHTML = "";
+  Object.values(INTENSITIES).forEach(i => {
+    const el = document.createElement("button");
+    el.className = "intensity" + (i.id === state.intensity ? " active" : "");
+    el.innerHTML = `<div class="head"><span><b>${i.label}</b><span class="tag" style="margin-left:6px">${i.tagalog}</span></span><span class="db">${i.db}dB</span></div><span class="desc">${i.desc}</span>`;
+    el.onclick = () => { state.intensity = i.id; renderIntensities(); if(!state.autoEmotion) applyIntensityToAll(); };
+    wrap.appendChild(el);
+  });
+}
+
+function populateVoiceSelect(){
+  const sel = $("voiceSelect");
+  const prev = state.voiceURI;
+  const picked = Engine.pickVoice();
+  const preferred = picked ? picked.voiceURI : null;
+  sel.innerHTML = "";
+  if(!state.voiceURI) state.voiceURI = preferred;
+  Engine.voices.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v.voiceURI;
+    o.textContent = v.name + " â€” " + v.lang + (v.localService ? " (local)" : " (online)");
+    if(v.voiceURI === state.voiceURI) o.selected = true;
+    sel.appendChild(o);
+  });
+  if(state.voiceURI && !Engine.voices.some(v => v.voiceURI === state.voiceURI)) state.voiceURI = preferred;
+}
+
+function renderLines(){
+  const wrap = $("lineList");
+  wrap.innerHTML = "";
+  state.lines.forEach((line, idx) => {
+    const el = document.createElement("div");
+    el.className = "line" + (line.id === state.playingId ? " playing" : "");
+    el.id = "ln_" + line.id;
+
+    const personaVal = state.autoEmotion ? (line.persona || state.persona) : state.persona;
+    const intensityVal = state.autoEmotion ? (line.intensity || state.intensity) : state.intensity;
+
+    const optsP = Object.keys(PERSONAS).map(id => `<option value="${id}" ${id===personaVal?"selected":""}>${PERSONAS[id].label}</option>`).join("");
+    const optsI = Object.keys(INTENSITIES).map(id => `<option value="${id}" ${id===intensityVal?"selected":""}>${INTENSITIES[id].label}</option>`).join("");
+
+    el.innerHTML = `
+      <div class="top">
+        <div class="idx">${idx+1}</div>
+        <textarea class="lineText" spellcheck="false">${esc(line.text)}</textarea>
+      </div>
+      <div class="acts">
+        <button class="btn primary sm playOne" title="Play">â–¶</button>
+        <select class="linePersona">${optsP}</select>
+        <select class="lineIntensity">${optsI}</select>
+        <select class="linePause">
+          ${[300,600,900,1200,1500,2000,2500].map(p => `<option value="${p}" ${p===line.pauseAfterMs?"selected":""}>${p}ms pause</option>`).join("")}
+        </select>
+        <button class="btn ghost sm moveUp" ${idx===0?"disabled":""}>â†‘</button>
+        <button class="btn ghost sm moveDown" ${idx===state.lines.length-1?"disabled":""}>â†“</button>
+        <button class="btn ghost sm delOne">âœ•</button>
+      </div>
+      <div class="vis">
+        <input type="text" class="lineVis" placeholder="Visual prompt para sa B-roll (opsyonal)" value="${esc(line.visualPrompt||"")}" />
+      </div>`;
+
+    const ta = el.querySelector(".lineText");
+    ta.addEventListener("input", () => { line.text = ta.value; updateCounts(); });
+
+    el.querySelector(".playOne").onclick = () => playLine(line.id);
+    const selP = el.querySelector(".linePersona");
+    selP.onchange = () => { if(state.autoEmotion) line.persona = selP.value; else state.persona = selP.value; };
+    const selI = el.querySelector(".lineIntensity");
+    selI.onchange = () => { if(state.autoEmotion) line.intensity = selI.value; else state.intensity = selI.value; };
+    el.querySelector(".linePause").onchange = e => line.pauseAfterMs = parseInt(e.target.value,10);
+    el.querySelector(".lineVis").oninput = e => line.visualPrompt = e.target.value;
+    el.querySelector(".moveUp").onclick = () => { if(idx>0){ const [x]=state.lines.splice(idx,1); state.lines.splice(idx-1,0,x); renderLines(); } };
+    el.querySelector(".moveDown").onclick = () => { if(idx<state.lines.length-1){ const [x]=state.lines.splice(idx,1); state.lines.splice(idx+1,0,x); renderLines(); } };
+    el.querySelector(".delOne").onclick = () => { state.lines.splice(idx,1); renderLines(); };
+
+    wrap.appendChild(el);
+  });
+}
+
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function applyPersonaToAll(){ state.lines.forEach(l => l.persona = state.persona); renderLines(); }
+function applyIntensityToAll(){ state.lines.forEach(l => l.intensity = state.intensity); renderLines(); }
+
+function updateCounts(){
+  const text = $("scriptText").value;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  $("wordCount").textContent = words;
+  $("charCount").textContent = text.length;
+  const totalPause = state.lines.reduce((a,l) => a + (l.pauseAfterMs||800), 0);
+  const secs = Math.round(words / 3.1 + totalPause/1000);
+  $("estDur").textContent = Math.floor(secs/60) + ":" + String(secs%60).padStart(2,"0");
+}
+
+/* ==================== PLAYBACK ==================== */
+
+const vizBars = (function(){
+  const wrap = $("viz");
+  for(let i=0;i<28;i++){ const b=document.createElement("div"); b.className="bar"; wrap.appendChild(b); }
+  return Array.from(wrap.children);
+})();
+
+function setViz(level){
+  const base = 4 + (level||0)*70;
+  vizBars.forEach((b,i)=>{
+    const v = base * (0.4 + Math.random()*0.6);
+    b.style.height = clamp(3, 34, v) + "px";
+  });
+}
+function idleViz(){ vizBars.forEach(b => b.style.height = "4px"); }
+
+async function playLine(id){
+  const line = state.lines.find(l => l.id === id);
+  if(!line) return;
+  stopPlayback(false);
+  state.playingId = id;
+  markPlaying(id);
+  Engine.speak(line.text, line, (err) => {
+    state.playingId = null;
+    markPlaying(null);
+    idleViz();
+    setStatus(err ? "Error playing line." : "Done.");
+  }, () => setStatus("Playing line..."));
+  setStatus("Playing line...");
+}
+
+function playAll(){
+  if(state.playing){ stopPlayback(false); return; }
+  if(!state.lines.length){ toast("Wala pang lines. Generate o split muna."); return; }
+  state.playing = true;
+  state.stopFlag = false;
+  $("btnPlayAll").textContent = "Stop";
+  playNext(0);
+}
+
+function playNext(idx){
+  if(state.stopFlag || idx >= state.lines.length){ stopPlayback(true); return; }
+  const line = state.lines[idx];
+  state.playingId = line.id;
+  markPlaying(line.id);
+  setStatus(`Line ${idx+1}/${state.lines.length}...`);
+  Engine.speak(line.text, line, (err) => {
+    if(state.stopFlag) return;
+    if(err){ setStatus("Error sa isang line."); stopPlayback(true); return; }
+    setTimeout(() => playNext(idx+1), line.pauseAfterMs || 900);
+  });
+}
+
+function stopPlayback(resetBtn){
+  state.playing = false;
+  state.stopFlag = true;
+  Engine.stop();
+  state.playingId = null;
+  markPlaying(null);
+  idleViz();
+  $("btnPlayAll").textContent = "Play All";
+  if(resetBtn){ setStatus("Stopped."); } else { setStatus("Stopped."); }
+}
+
+function markPlaying(id){
+  document.querySelectorAll(".line").forEach(el => el.classList.remove("playing"));
+  if(id){ const el = document.getElementById("ln_"+id); if(el) el.classList.add("playing"); }
+}
+
+function setStatus(t){ $("status").innerHTML = "<b>â—</b> " + esc(t); }
+
+setInterval(() => { if(state.playing) setViz(0.25 + Math.random()*0.35); }, 90);
+
+/* ==================== RECORD & DOWNLOAD (.wav) ==================== */
+
+async function recordAndDownload(){
+  if(state.recording) return;
+  if(!state.lines.length){ toast("Wala pang lines na i-record."); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+    toast("Hindi supported ng browser ang tab-audio capture. Gumamit ng Chrome o Edge.");
+    return;
+  }
+  if(!window.isSecureContext){
+    toast("Kailangan ng localhost o HTTPS para sa download. I-run ang start-server.ps1.");
+    return;
+  }
+  state.recording = true;
+  $("btnRecord").disabled = true;
+  $("recStatus").textContent = "Piliin ang tab na ito at i-check ang 'Share tab audio' / 'Share system audio', tapos Share.";
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getDisplayMedia({ video:false, audio:true });
+  } catch(e){
+    state.recording = false;
+    $("btnRecord").disabled = false;
+    $("recStatus").textContent = "Cancelled. Paki-share muli ang tab na may audio.";
+    return;
+  }
+  const audioTrack = stream.getAudioTracks()[0];
+  if(!audioTrack){ toast("Walang audio track sa napiling tab."); stream.getTracks().forEach(t=>t.stop()); state.recording=false; $("btnRecord").disabled=false; return; }
+  const audioStream = new MediaStream([audioTrack]);
+  const rec = new MediaRecorder(audioStream);
+  const chunks = [];
+  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+  rec.onstop = () => {
+    const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
+    stream.getTracks().forEach(t => t.stop());
+    blobToAudioBuffer(blob).then(buf => {
+      const wav = audioBufferToWav(buf);
+      downloadBlob(wav, "Don_Bossing_voiceover.wav");
+      state.recording = false;
+      $("btnRecord").disabled = false;
+      $("recStatus").textContent = "Na-download na ang .wav file! Unlimited pa rin ang output mo, bossing.";
+      toast("Download complete! .wav ready.");
+    }).catch(() => {
+      downloadBlob(blob, "Don_Bossing_voiceover." + (blob.type.includes("ogg") ? "ogg" : "webm"));
+      state.recording = false;
+      $("btnRecord").disabled = false;
+      $("recStatus").textContent = "Na-download bilang fallback format. Para sa .wav, gumamit ng Chrome/Edge.";
+    });
+  };
+  rec.start();
+  stopPlayback(false);
+  state.playing = true;
+  setStatus("Recording...");
+  await playAllRaw();
+  setTimeout(() => { if(rec.state !== "inactive") rec.stop(); }, 600);
+}
+
+function playAllRaw(){
+  return new Promise((resolve) => {
+    let idx = 0;
+    const next = () => {
+      if(idx >= state.lines.length){ resolve(); return; }
+      const line = state.lines[idx++];
+      Engine.speak(line.text, line, () => setTimeout(next, line.pauseAfterMs || 900));
+    };
+    next();
+  });
+}
+
+function blobToAudioBuffer(blob){
+  return new Promise((resolve, reject) => {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const fr = new FileReader();
+    fr.onload = () => ctx.decodeAudioData(fr.result, resolve, reject);
+    fr.readAsArrayBuffer(blob);
+  });
+}
+
+function audioBufferToWav(buffer){
+  const numCh = Math.min(2, buffer.numberOfChannels);
+  const sr = buffer.sampleRate;
+  const fmt = 1, bits = 16;
+  const data = new Float32Array(buffer.length * numCh);
+  for(let c=0;c<numCh;c++){
+    const ch = buffer.getChannelData(c);
+    for(let i=0;i<buffer.length;i++) data[i*numCh+c] = ch[i];
+  }
+  const bytesPer = bits/8;
+  const blockAlign = numCh*bytesPer;
+  const dataSize = data.length*bytesPer;
+  const buf = new ArrayBuffer(44 + dataSize);
+  const v = new DataView(buf);
+  const wStr = (o,s) => { for(let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  wStr(0,"RIFF"); v.setUint32(4, 36+dataSize, true); wStr(8,"WAVE");
+  wStr(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,fmt,true); v.setUint16(22,numCh,true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*blockAlign,true); v.setUint16(32,blockAlign,true); v.setUint16(34,bits,true);
+  wStr(36,"data"); v.setUint32(40,dataSize,true);
+  for(let i=0;i<data.length;i++){
+    const s = Math.max(-1, Math.min(1, data[i]));
+    v.setInt16(44 + i*bytesPer, s<0 ? s*32768 : s*32767, true);
+  }
+  return new Blob([buf], { type:"audio/wav" });
+}
+
+function downloadBlob(blob, name){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+
+/* ==================== CLIPBOARD ==================== */
+
+function copy(text, msg){
+  navigator.clipboard.writeText(text).then(() => toast(msg || "Copied!")).catch(() => toast("Hindi ma-copy."));
+}
+
+/* ==================== TOAST ==================== */
+
+let toastTimer;
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+/* ==================== WIRING ==================== */
+
+function bindEvents(){
+  $("btnGenerate").onclick = generateScript;
+  $("btnSplit").onclick = splitIntoLines;
+  $("btnClear").onclick = () => { $("scriptText").value=""; state.lines=[]; renderLines(); updateCounts(); };
+  $("btnAddLine").onclick = () => { state.lines.push({id:nextLineId(), text:"Bagong linya...", persona:null, intensity:null, pauseAfterMs:900, visualPrompt:""}); renderLines(); };
+  $("btnRegenerateLineIds").onclick = () => { state.lines.forEach(l => l.id = nextLineId()); renderLines(); };
+  $("btnPlayAll").onclick = playAll;
+  $("btnStop").onclick = () => stopPlayback(true);
+  $("btnCopyScript").onclick = () => copy($("scriptText").value, "Script copied!");
+  $("btnCopyLines").onclick = () => copy(JSON.stringify(state.lines, null, 2), "Lines JSON copied!");
+  $("btnExportKit").onclick = () => {
+    const t = TOPICS[state.topic];
+    const kit = t ? `THUMBNAILS:\n${t.thumbs.join("\n")}\n\nB-ROLL:\n${t.broll}` : "Generate sample script muna.";
+    copy(kit, "Production kit copied!");
+  };
+  $("btnRecord").onclick = recordAndDownload;
+
+  document.querySelectorAll(".chip[data-format]").forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll(".chip[data-format]").forEach(x => x.classList.remove("active"));
+      c.classList.add("active");
+      state.format = c.dataset.format;
+    };
+  });
+
+  $("voiceSelect").onchange = e => { state.voiceURI = e.target.value; };
+
+  const bindSlider = (id, cb) => {
+    const el = $(id);
+    el.oninput = () => { cb(el.value); };
+  };
+  bindSlider("pitch", v => { state.pitch = parseInt(v,10); $("pitchVal").textContent = (v>0?"+":"") + v; });
+  bindSlider("rate", v => { state.rate = parseInt(v,10); $("rateVal").textContent = (v/100).toFixed(2); });
+  bindSlider("bass", v => { state.bass = parseInt(v,10); $("bassVal").textContent = v + "dB"; });
+  bindSlider("vol", v => { state.vol = parseInt(v,10); $("volVal").textContent = v + "%"; });
+
+  $("autoEmotion").onchange = e => { state.autoEmotion = e.target.checked; renderLines(); };
+}
+
+function init(){
+  bindEvents();
+  renderTopicChips();
+  renderPersonas();
+  renderIntensities();
+  populateVoiceSelect();
+  Engine.loadVoices();
+  Engine.synth.onvoiceschanged = () => Engine.loadVoices();
+  for(let i=0;i<vizBars.length;i++) vizBars[i].style.height = "4px";
+  generateScript();
+}
+
+init();
+
+})();
+</script>
+</body>
+</html>
