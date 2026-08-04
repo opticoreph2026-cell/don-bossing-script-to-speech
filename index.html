@@ -20,40 +20,53 @@
     --green:#3ddc84;
     --red:#ff5a5f;
     --radius:16px;
+    --gap:16px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
   html,body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100%}
-  body{padding-bottom:60px}
+  body{padding-bottom:110px}
   ::selection{background:var(--gold);color:#000}
   .serif{font-family:'Playfair Display',serif}
-  .wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
 
-  header{background:linear-gradient(180deg,#0e0e16,#0a0a0f);border-bottom:1px solid var(--line);padding:22px 0}
-  .brand{display:flex;align-items:center;gap:14px}
-  .logo{width:46px;height:46px;border-radius:12px;background:radial-gradient(circle at 30% 30%,var(--gold2),var(--gold));display:grid;place-items:center;font-weight:900;font-size:22px;color:#000;box-shadow:0 4px 20px rgba(212,175,55,.35)}
-  .brand h1{font-size:26px;letter-spacing:.5px;font-weight:800}
+  /* ---------- Header ---------- */
+  header{background:linear-gradient(180deg,#0e0e16,#0a0a0f);border-bottom:1px solid var(--line);padding:16px 0}
+  .brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand-left{display:flex;align-items:center;gap:14px;min-width:0}
+  .logo{width:44px;height:44px;border-radius:12px;background:radial-gradient(circle at 30% 30%,var(--gold2),var(--gold));display:grid;place-items:center;font-weight:900;font-size:22px;color:#000;box-shadow:0 4px 20px rgba(212,175,55,.35);flex:none}
+  .brand h1{font-size:24px;letter-spacing:.5px;font-weight:800;line-height:1.1;white-space:nowrap}
   .brand h1 em{color:var(--gold);font-style:normal}
-  .brand p{color:var(--muted);font-size:12.5px;margin-top:2px}
-  .badges{display:flex;gap:8px;flex-wrap:wrap}
-  .badge{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .brand p{color:var(--muted);font-size:12.5px;margin-top:2px;white-space:nowrap}
+  .badges{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .badge{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
   .badge.gold{border-color:rgba(212,175,55,.4);color:var(--gold)}
   .badge.green{border-color:rgba(61,220,132,.35);color:var(--green)}
+  @media(max-width:860px){ .brand-left{flex:1 1 auto} .badges{margin-left:0;width:100%;justify-content:flex-start} }
 
-  .hero{text-align:center;padding:40px 20px 28px}
-  .hero h2{font-size:clamp(26px,4vw,44px);font-weight:800;line-height:1.15}
+  /* ---------- Hero ---------- */
+  .hero{text-align:center;padding:34px 20px 24px}
+  .hero h2{font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.15}
   .hero h2 span{color:var(--gold)}
-  .hero p{color:var(--muted);max-width:640px;margin:12px auto 0;font-size:15px;line-height:1.6}
+  .hero p{color:var(--muted);max-width:660px;margin:12px auto 0;font-size:15px;line-height:1.6}
 
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
-  @media(max-width:960px){.grid{grid-template-columns:1fr}}
+  /* ---------- Layout ---------- */
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-items:stretch}
+  @media(max-width:1024px){.layout{grid-template-columns:1fr}}
+  .section{margin-top:var(--gap)}
 
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
-  .card h3{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .card h3 .n{width:22px;height:22px;border-radius:6px;background:rgba(212,175,55,.15);color:var(--gold);display:grid;place-items:center;font-size:11px}
+  /* ---------- Cards ---------- */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;height:100%;min-width:0}
+  .card h3{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .card h3 .n{width:22px;height:22px;border-radius:6px;background:rgba(212,175,55,.15);color:var(--gold);display:grid;place-items:center;font-size:11px;flex:none}
+  .card .grow{flex:1}
 
-  label.lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 7px}
+  label.lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 7px}
+  .field{margin-bottom:16px}
+  .field:last-child{margin-bottom:0}
+
   .chips{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:var(--text)}
+  .chip{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:var(--text);text-align:left}
   .chip:hover{border-color:var(--gold);color:var(--gold)}
   .chip.active{background:var(--gold);color:#000;border-color:var(--gold)}
   .chip small{display:block;font-size:10px;opacity:.7;font-weight:600;margin-top:1px}
@@ -63,39 +76,47 @@
   input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 14px;font-size:13.5px;font-family:inherit}
   input[type=text]:focus{outline:none;border-color:var(--gold)}
   select{background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:11px 12px;font-size:13.5px;font-family:inherit;width:100%}
+  select:focus{outline:none;border-color:var(--gold)}
 
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;border:none;border-radius:12px;cursor:pointer;padding:13px 18px;font-size:13.5px;transition:.15s;font-family:inherit}
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;border:none;border-radius:12px;cursor:pointer;padding:12px 18px;font-size:13.5px;transition:.15s;font-family:inherit;line-height:1.2}
   .btn.primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;box-shadow:0 6px 24px rgba(212,175,55,.3)}
   .btn.primary:hover{transform:translateY(-1px)}
   .btn.ghost{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
   .btn.ghost:hover{border-color:var(--gold);color:var(--gold)}
-  .btn.sm{padding:8px 12px;font-size:12px;border-radius:10px}
+  .btn.sm{padding:7px 11px;font-size:12px;border-radius:10px}
   .btn.green{background:var(--green);color:#000}
   .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
 
-  .meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
-  .meta b{color:var(--text)}
+  .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+  .meta span{display:inline-flex;align-items:center;gap:4px}
+  .meta b{color:var(--text);font-family:monospace}
 
-  .persona-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px}
-  .persona{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel2);transition:.15s;text-align:left}
+  /* ---------- Personas ---------- */
+  .persona-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
+  @media(max-width:560px){.persona-grid{grid-template-columns:1fr 1fr}}
+  .persona{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel2);transition:.15s;text-align:left;display:flex;flex-direction:column;height:100%;font-family:inherit}
   .persona:hover{border-color:var(--gold)}
   .persona.active{border-color:var(--gold);background:rgba(212,175,55,.08)}
-  .persona b{display:block;font-size:13px}
-  .persona .tag{font-size:10.5px;color:var(--gold);font-weight:700;display:block;margin-top:2px}
-  .persona .desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4;display:block}
+  .persona b{display:block;font-size:13px;line-height:1.25}
+  .persona .tag{font-size:10.5px;color:var(--gold);font-weight:700;display:block;margin-top:3px}
+  .persona .desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.45;display:block;flex:1}
 
-  .intensity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  /* ---------- Intensities ---------- */
+  .intensity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
   @media(max-width:560px){.intensity-grid{grid-template-columns:1fr}}
-  .intensity{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .intensity{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--panel2);transition:.15s;display:flex;flex-direction:column;height:100%;font-family:inherit}
   .intensity:hover{border-color:var(--gold)}
   .intensity.active{border-color:var(--gold);background:rgba(212,175,55,.08)}
-  .intensity .head{display:flex;justify-content:space-between;align-items:center}
-  .intensity b{font-size:13px}
-  .intensity .tag{font-size:10.5px;color:var(--gold);font-weight:700}
-  .intensity .db{font-size:10px;color:var(--muted);font-weight:700;padding:3px 7px;border-radius:999px;background:rgba(212,175,55,.12);color:var(--gold)}
-  .intensity .desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4;display:block}
+  .intensity .head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .intensity b{font-size:13px;line-height:1.2}
+  .intensity .tag{font-size:10.5px;color:var(--gold);font-weight:700;display:block;margin-top:2px}
+  .intensity .db{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(212,175,55,.12);color:var(--gold);flex:none}
+  .intensity .desc{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.45;display:block}
 
-  .sliders{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+  /* ---------- Sliders ---------- */
+  .sliders{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
   @media(max-width:560px){.sliders{grid-template-columns:1fr}}
   .slider label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
   .slider label b{color:var(--text);font-family:monospace}
@@ -103,33 +124,35 @@
   input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #000}
   input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #000}
 
-  .lines{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  /* ---------- Line editor ---------- */
+  .lines{margin-top:4px;display:flex;flex-direction:column;gap:10px}
   .line{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
   .line.playing{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
   .line .top{display:flex;gap:10px;align-items:flex-start}
-  .line .idx{font-size:11px;font-weight:800;color:var(--gold);min-width:22px;padding-top:4px;text-align:center}
+  .line .idx{font-size:11px;font-weight:800;color:var(--gold);min-width:22px;padding-top:8px;text-align:center;flex:none}
   .line textarea{min-height:56px;flex:1;padding:10px;font-size:13.5px}
-  .line .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
-  .line .acts select{width:auto;flex:1;min-width:120px;padding:7px 10px;font-size:12px}
-  .line .pause{font-size:11px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:6px}
+  .line .acts{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}
+  .line .acts select{width:auto;flex:1 1 130px;padding:7px 10px;font-size:12px;min-width:0}
+  .line .acts .acts-side{margin-left:auto;display:flex;gap:6px;align-items:center}
   .line .vis{width:100%;margin-top:8px;font-size:11px;color:var(--muted)}
   .line .vis input{font-size:12px;padding:8px 10px}
 
-  .playbar{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,18,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 20px;z-index:50}
-  .playbar .inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .viz{display:flex;gap:3px;align-items:flex-end;height:34px;flex:1;min-width:120px}
+  /* ---------- Playbar ---------- */
+  .playbar{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,18,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 20px;z-index:50}
+  .playbar .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .viz{display:flex;gap:3px;align-items:flex-end;height:34px;flex:1 1 160px;min-width:120px}
   .viz .bar{width:5px;border-radius:2px;background:linear-gradient(180deg,var(--gold2),var(--gold));height:4px;transition:height .08s ease}
-  .status{font-size:12px;color:var(--muted);min-width:130px}
+  .status{font-size:12px;color:var(--muted);flex:1 1 200px;min-width:0;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .status b{color:var(--gold)}
+  @media(max-width:640px){ .status{flex-basis:100%;order:3;text-align:left;white-space:normal} }
 
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  @media(max-width:960px){.grid2{grid-template-columns:1fr}}
+  /* ---------- Kit ---------- */
+  .kit-item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12.5px;color:var(--muted);line-height:1.55}
+  .kit-item b{color:var(--gold);display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+  .kit-item + .kit-item{margin-top:10px}
 
-  .kit-item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12.5px;color:var(--muted);line-height:1.5}
-  .kit-item b{color:var(--gold);display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
-
-  .toast{position:fixed;top:18px;right:18px;z-index:99;background:var(--panel2);border:1px solid var(--gold);color:var(--text);padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none}
+  /* ---------- Misc ---------- */
+  .toast{position:fixed;top:18px;right:18px;z-index:99;background:var(--panel2);border:1px solid var(--gold);color:var(--text);padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none;max-width:min(90vw,360px)}
   .toast.show{opacity:1;transform:none}
 
   .footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 20px;line-height:1.7}
@@ -138,6 +161,7 @@
   .hint{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:8px}
   .hidden{display:none!important}
   .toggle-row{display:flex;align-items:center;gap:10px}
+  .toggle-row .hint{margin:0}
   .switch{position:relative;width:40px;height:22px;flex:none}
   .switch input{opacity:0;width:0;height:0}
   .slid{position:absolute;inset:0;background:var(--line);border-radius:99px;cursor:pointer;transition:.2s}
@@ -150,10 +174,12 @@
 
 <header>
   <div class="wrap brand">
-    <div class="logo">B</div>
-    <div style="flex:1">
-      <h1>DON <em>BOSSING</em></h1>
-      <p>Filipino Billionaire Script-to-Speech Studio</p>
+    <div class="brand-left">
+      <div class="logo">B</div>
+      <div>
+        <h1>DON <em>BOSSING</em></h1>
+        <p>Filipino Billionaire Script-to-Speech Studio</p>
+      </div>
     </div>
     <div class="badges">
       <span class="badge gold">Unlimited Output</span>
@@ -169,33 +195,41 @@
   <p>I-convert ang iyong script sa boses ng isang Filipino male billionaire na matatas sa Tagalog. Pumili ng emosyon at vocal intensity para sa tamang mood ng iyong YouTube content.</p>
 </div>
 
-<div class="wrap grid">
+<div class="wrap layout">
 
   <section class="card">
     <h3><span class="n">1</span> Script</h3>
 
-    <label class="lbl">Topic / Paksa</label>
-    <div class="chips" id="topicChips"></div>
-
-    <label class="lbl">Video Format</label>
-    <div class="chips" id="formatChips">
-      <div class="chip active" data-format="shorts">Shorts / Reels</div>
-      <div class="chip" data-format="longform">Longform</div>
+    <div class="field">
+      <label class="lbl">Topic / Paksa</label>
+      <div class="chips" id="topicChips"></div>
     </div>
 
-    <label class="lbl">Custom Prompt (Opsyonal)</label>
-    <input type="text" id="customPrompt" placeholder="e.g. Utang na-loob at kung bakit tayo natatakot yumaman..." />
-
-    <label class="lbl">Script / Script Text</label>
-    <textarea id="scriptText" placeholder="Isulat o i-paste ang script dito..."></textarea>
-
-    <div class="meta">
-      <span><b id="wordCount">0</b> words</span>
-      <span><b id="charCount">0</b> chars</span>
-      <span>~<b id="estDur">0:00</b> est.</span>
+    <div class="field">
+      <label class="lbl">Video Format</label>
+      <div class="chips" id="formatChips">
+        <div class="chip active" data-format="shorts">Shorts / Reels</div>
+        <div class="chip" data-format="longform">Longform</div>
+      </div>
     </div>
 
-    <div class="toolbar">
+    <div class="field">
+      <label class="lbl">Custom Prompt (Opsyonal)</label>
+      <input type="text" id="customPrompt" placeholder="e.g. Utang na-loob at kung bakit tayo natatakot yumaman..." />
+    </div>
+
+    <div class="field">
+      <label class="lbl">Script / Script Text</label>
+      <textarea id="scriptText" placeholder="Isulat o i-paste ang script dito..."></textarea>
+      <div class="meta">
+        <span><b id="wordCount">0</b> words</span>
+        <span><b id="charCount">0</b> chars</span>
+        <span>~<b id="estDur">0:00</b> est.</span>
+      </div>
+    </div>
+
+    <div class="grow"></div>
+    <div class="btn-row">
       <button class="btn primary" id="btnGenerate">Generate Sample Script</button>
       <button class="btn ghost" id="btnSplit">Split into Lines</button>
       <button class="btn ghost" id="btnClear">Clear</button>
@@ -206,53 +240,64 @@
   <section class="card">
     <h3><span class="n">2</span> Voice &amp; Emotion</h3>
 
-    <label class="lbl">Persona / Emosyon ng Boses</label>
-    <div class="persona-grid" id="personaGrid"></div>
-
-    <label class="lbl" style="margin-top:16px">Vocal Intensity Level</label>
-    <div class="intensity-grid" id="intensityGrid"></div>
-
-    <label class="lbl" style="margin-top:16px">Browser Voice</label>
-    <select id="voiceSelect"></select>
-
-    <div class="sliders" style="margin-top:14px">
-      <div class="slider"><label>Pitch <b id="pitchVal">+0</b></label><input type="range" id="pitch" min="-20" max="20" value="0" /></div>
-      <div class="slider"><label>Rate <b id="rateVal">1.00</b></label><input type="range" id="rate" min="50" max="200" value="100" /></div>
-      <div class="slider"><label>Bass Boost <b id="bassVal">6dB</b></label><input type="range" id="bass" min="0" max="18" value="6" /></div>
-      <div class="slider"><label>Volume <b id="volVal">100%</b></label><input type="range" id="vol" min="0" max="150" value="100" /></div>
+    <div class="field">
+      <label class="lbl">Persona / Emosyon ng Boses</label>
+      <div class="persona-grid" id="personaGrid"></div>
     </div>
 
-    <label class="lbl" style="margin-top:16px">Auto-Apply Emotion Per Line</label>
-    <div class="toggle-row">
-      <label class="switch"><input type="checkbox" id="autoEmotion" checked /><span class="slid"></span></label>
-      <span class="hint" style="margin:0">Pipiliin ng bawat linya ang persona nito. I-off para i-lock lahat sa global persona.</span>
+    <div class="field">
+      <label class="lbl">Vocal Intensity Level</label>
+      <div class="intensity-grid" id="intensityGrid"></div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Browser Voice</label>
+      <select id="voiceSelect"></select>
+    </div>
+
+    <div class="field">
+      <div class="sliders">
+        <div class="slider"><label>Pitch <b id="pitchVal">+0</b></label><input type="range" id="pitch" min="-20" max="20" value="0" /></div>
+        <div class="slider"><label>Rate <b id="rateVal">1.00</b></label><input type="range" id="rate" min="50" max="200" value="100" /></div>
+        <div class="slider"><label>Bass Boost <b id="bassVal">6dB</b></label><input type="range" id="bass" min="0" max="18" value="6" /></div>
+        <div class="slider"><label>Volume <b id="volVal">100%</b></label><input type="range" id="vol" min="0" max="150" value="100" /></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Auto-Apply Emotion Per Line</label>
+      <div class="toggle-row">
+        <label class="switch"><input type="checkbox" id="autoEmotion" checked /><span class="slid"></span></label>
+        <span class="hint">Pipiliin ng bawat linya ang persona nito. I-off para i-lock lahat sa global persona.</span>
+      </div>
     </div>
   </section>
 
 </div>
 
-<div class="wrap" style="margin-top:18px">
+<div class="wrap section">
   <section class="card">
     <h3><span class="n">3</span> Lines / Mga Linya</h3>
     <div class="lines" id="lineList"></div>
-    <div class="toolbar">
+    <div class="btn-row" style="margin-top:12px">
       <button class="btn ghost sm" id="btnAddLine">+ Add Line</button>
       <button class="btn ghost sm" id="btnRegenerateLineIds">Re-index</button>
     </div>
   </section>
 </div>
 
-<div class="wrap grid2" style="margin-top:18px">
+<div class="wrap layout section">
   <section class="card">
     <h3><span class="n">4</span> Production Kit (Faceless YouTube)</h3>
-    <div class="kit-item" style="margin-bottom:10px"><b>Thumbnail Ideas</b><span id="kitThumbs"></span></div>
+    <div class="kit-item"><b>Thumbnail Ideas</b><span id="kitThumbs"></span></div>
     <div class="kit-item"><b>B-Roll / Visual Prompts</b><span id="kitBroll"></span></div>
   </section>
   <section class="card">
     <h3><span class="n">5</span> Export &amp; Download</h3>
     <label class="lbl">Unlimited Voiceover</label>
-    <p class="hint" style="margin-bottom:12px">Playback at download ay libre at walang limitasyon. Para sa <b>.wav</b> na file, i-click ang Record &amp; Download at piliin ang tab na ito (i-check ang "Share tab audio" / "Share system audio").</p>
-    <div class="toolbar">
+    <p class="hint" style="margin-bottom:14px">Playback at download ay libre at walang limitasyon. Para sa <b>.wav</b> na file, i-click ang Record &amp; Download at piliin ang tab na ito (i-check ang "Share tab audio" / "Share system audio").</p>
+    <div class="grow"></div>
+    <div class="btn-row">
       <button class="btn green" id="btnRecord">Record &amp; Download .wav</button>
       <button class="btn ghost" id="btnCopyScript">Copy Script</button>
       <button class="btn ghost" id="btnCopyLines">Copy Lines (JSON)</button>
@@ -564,9 +609,11 @@ function renderLines(){
         <select class="linePause">
           ${[300,600,900,1200,1500,2000,2500].map(p => `<option value="${p}" ${p===line.pauseAfterMs?"selected":""}>${p}ms pause</option>`).join("")}
         </select>
-        <button class="btn ghost sm moveUp" ${idx===0?"disabled":""}>â†‘</button>
-        <button class="btn ghost sm moveDown" ${idx===state.lines.length-1?"disabled":""}>â†“</button>
-        <button class="btn ghost sm delOne">âœ•</button>
+        <div class="acts-side">
+          <button class="btn ghost sm moveUp" ${idx===0?"disabled":""}>â†‘</button>
+          <button class="btn ghost sm moveDown" ${idx===state.lines.length-1?"disabled":""}>â†“</button>
+          <button class="btn ghost sm delOne">âœ•</button>
+        </div>
       </div>
       <div class="vis">
         <input type="text" class="lineVis" placeholder="Visual prompt para sa B-roll (opsyonal)" value="${esc(line.visualPrompt||"")}" />
