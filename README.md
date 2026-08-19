@@ -7,10 +7,10 @@ Model: **Faceless** — bundle a voiceover, thumbnail ideas, and B-roll prompts 
 ## Features
 
 - **Natural human voice (free)** — uses Microsoft Edge neural TTS via a Vercel serverless function. Voice `fil-PH-AngeloNeural` is a natural-sounding Filipino male fluent in Tagalog. No API key, no credits, no limits.
-- **6 voice personas (emotions)** — Confident Billionaire, Calm Executive, Tough Love Direct, Engaging Storyteller, Suspenseful Reveal, and Warm Brotherly Advice, each with its own natural prosody (pitch/rate/volume).
+- **6 voice personas (emotions)** — Confident Billionaire, Calm Executive, Tough Love Direct, Engaging Storyteller, Suspenseful Reveal, and Warm Brotherly Advice, each with its own natural prosody (pitch/rate/volume). One persona + one intensity apply uniformly to the whole script.
 - **4 vocal intensity levels** — Subtle/Secret Tone, Normal Dialogue, High Energy/Hook, and Explosive Boss Energy, layered on top of the persona for mood-rich delivery.
 - **3 preset topics** — Sikolohiya ng Pera, Diskarte, and Buhay Pinoy with ready-made Tagalog scripts, thumbnail ideas, and B-roll prompts. Custom topics also supported.
-- **Line-by-line editor** — reorder, re-emotion, adjust pauses, add visual prompts per line.
+- **Line-by-line editor** — reorder, adjust pauses, add visual prompts per line. Voice and emotion stay uniform from the global persona + intensity settings.
 - **Full voice control** — Edge Filipino voices (Angelo male, Blessica female) + English neural voices, with pitch, rate, and volume sliders. Browser TTS is kept as an automatic offline fallback.
 - **Downloadable `.wav` voiceover** — directly generated from the Edge TTS audio (no screen-share needed) with your per-line pauses baked in.
 
@@ -46,4 +46,4 @@ The natural voice comes from the serverless function in `api/tts.js` (uses the f
 - For the most natural Tagalog, keep the **Angelo (Filipino Male)** voice selected and dial the Pitch slider down slightly.
 - Personas + intensities combine: e.g. **Tough Love Direct** + **Explosive Boss Energy** for hard-hitting hooks, **Calm Executive** + **Subtle/Secret** for suspenseful reveals.
 - Longform mode adds an intro; Shorts mode keeps it tight for retention.
-- Every line can carry its own emotion + intensity for dynamic, mood-rich delivery.
+- The whole script uses one uniform voice and emotion — pick your persona + intensity once at the top and every line follows it.

@@ -263,14 +263,6 @@
         <div class="slider"><label>Volume <b id="volVal">100%</b></label><input type="range" id="vol" min="0" max="150" value="100" /></div>
       </div>
     </div>
-
-    <div class="field">
-      <label class="lbl">Auto-Apply Emotion Per Line</label>
-      <div class="toggle-row">
-        <label class="switch"><input type="checkbox" id="autoEmotion" checked /><span class="slid"></span></label>
-        <span class="hint">Pipiliin ng bawat linya ang persona nito. I-off para i-lock lahat sa global persona.</span>
-      </div>
-    </div>
   </section>
 
 </div>
@@ -352,11 +344,11 @@ const TOPICS = {
     label:"Sikolohiya ng Pera", tag:"Psychology of Money",
     hook:"Alam mo ba kung bakit kahit lumaki sweldo mo, baon ka pa rin sa credit card?",
     lines:[
-      {text:"Makinig ka nang mabuti, bossing: Ang problema mo ay hindi kawalan ng pera, kundi kawalan ng disiplina sa utak mo.",emotion:"galit_sa_tamad",intensity:"high_hype",pauseAfterMs:1000,visualPrompt:"Close up typing on a high-end laptop with credit card swipe overlays."},
-      {text:"Ang pera ay emosyon. Kapag hindi mo kontrolado ang pakiramdam mo, kontrolado ka ng tindahan.",emotion:"mayabang_may_laman",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Cinematic B-roll of Manila skylines transitioning to glowing gold brain synapse graphics."},
-      {text:"Ang mahirap at middle class, bibili agad ng bagong phone o sapatos para magmukhang mayaman.",emotion:"mayabang_may_laman",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Luxury retail store glass display case with glowing price tags."},
-      {text:"Ang mayaman, bumibili ng assets. Ang mahirap, bumibili ng liabilities na kunwari ay assets.",emotion:"kalmado_seryoso",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Flow chart graphics showing Income -> Expense vs Income -> Assets -> Cashflow."},
-      {text:"Gusto mong magkaroon ng totoong diskarte? Unahin mo ang asset, tsaka na ang flex.",emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1500,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."}
+      {text:"Makinig ka nang mabuti, bossing: Ang problema mo ay hindi kawalan ng pera, kundi kawalan ng disiplina sa utak mo.",pauseAfterMs:1000,visualPrompt:"Close up typing on a high-end laptop with credit card swipe overlays."},
+      {text:"Ang pera ay emosyon. Kapag hindi mo kontrolado ang pakiramdam mo, kontrolado ka ng tindahan.",pauseAfterMs:1000,visualPrompt:"Cinematic B-roll of Manila skylines transitioning to glowing gold brain synapse graphics."},
+      {text:"Ang mahirap at middle class, bibili agad ng bagong phone o sapatos para magmukhang mayaman.",pauseAfterMs:1000,visualPrompt:"Luxury retail store glass display case with glowing price tags."},
+      {text:"Ang mayaman, bumibili ng assets. Ang mahirap, bumibili ng liabilities na kunwari ay assets.",pauseAfterMs:1000,visualPrompt:"Flow chart graphics showing Income -> Expense vs Income -> Assets -> Cashflow."},
+      {text:"Gusto mong magkaroon ng totoong diskarte? Unahin mo ang asset, tsaka na ang flex.",pauseAfterMs:1500,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."}
     ],
     thumbs:["SWELDO TRAP!","3 SECRET NG MAYAMAN","UTANG NA-LOOB TRAP"],
     broll:"Luxury Manila penthouse balcony. Gold brain synapse graphics. Flow charts ng Income vs Assets."
@@ -365,11 +357,11 @@ const TOPICS = {
     label:"Diskarte", tag:"Strategy & Hustle",
     hook:"Wala kang puhunan? Huling beses mo nang idahilan yan ngayong araw, bossing.",
     lines:[
-      {text:"Wala kang puhunan? Huling beses mo nang idahilan yan ngayong araw, bossing.",emotion:"galit_sa_tamad",intensity:"extreme_boss",pauseAfterMs:1200,visualPrompt:"Dramatic zoom on a sleek smartphone resting beside a cup of black espresso."},
-      {text:"Ang diskarte ay hindi swerte. Ito ay preparasyon na nakilala ang oportunidad.",emotion:"kalmado_seryoso",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Executive wearing tailored suit looking out the glass window of a high-rise in BGC."},
-      {text:"Hindi mo kailangan ng milyon para magsimula. Kailangan mo ng utak, tibay, at tamang galaw.",emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1000,visualPrompt:"Glowing 3D icons of Time, Knowledge, and Network connecting in a web."},
-      {text:"Ang pera ay dumadaloy sa taong may sistema. Walang sistema, walang daloy.",emotion:"mayabang_may_laman",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"3D animated bridge connecting buyer and seller with gold coin flow."},
-      {text:"Ulitin mo, boss: Ang negosyo ay hindi puhunan. Ang negosyo ay problema na hinahanapan mo ng solusyon.",emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1500,visualPrompt:"Close up of a luxury watch tapping on a polished mahogany desk in Manila."}
+      {text:"Wala kang puhunan? Huling beses mo nang idahilan yan ngayong araw, bossing.",pauseAfterMs:1200,visualPrompt:"Dramatic zoom on a sleek smartphone resting beside a cup of black espresso."},
+      {text:"Ang diskarte ay hindi swerte. Ito ay preparasyon na nakilala ang oportunidad.",pauseAfterMs:1000,visualPrompt:"Executive wearing tailored suit looking out the glass window of a high-rise in BGC."},
+      {text:"Hindi mo kailangan ng milyon para magsimula. Kailangan mo ng utak, tibay, at tamang galaw.",pauseAfterMs:1000,visualPrompt:"Glowing 3D icons of Time, Knowledge, and Network connecting in a web."},
+      {text:"Ang pera ay dumadaloy sa taong may sistema. Walang sistema, walang daloy.",pauseAfterMs:1000,visualPrompt:"3D animated bridge connecting buyer and seller with gold coin flow."},
+      {text:"Ulitin mo, boss: Ang negosyo ay hindi puhunan. Ang negosyo ay problema na hinahanapan mo ng solusyon.",pauseAfterMs:1500,visualPrompt:"Close up of a luxury watch tapping on a polished mahogany desk in Manila."}
     ],
     thumbs:["ZERO CAPITAL DISKARTE","NO MONEY? NO PROBLEM","SISTEMA ANG TUNAY NA YAMAN"],
     broll:"BGC skyscrapers. Mahogany desk na may luxury watch. Gold coin flows at network graphics."
@@ -378,11 +370,11 @@ const TOPICS = {
     label:"Buhay Pinoy", tag:"Filipino Life & Money",
     hook:"Bakit kahit nagtatrabaho ka nang magdamag, baon ka pa rin sa utang, bossing?",
     lines:[
-      {text:"Kultura natin ang magpaka-martir sa trabaho. Pero tanong: yumayaman ka ba, o napapagod ka lang?",emotion:"galit_sa_tamad",intensity:"high_hype",pauseAfterMs:1000,visualPrompt:"B-roll of a young Filipino professional staring at a stack of bills in a modern condo."},
-      {text:"Ang pagiging manggagawa ay hindi sumpa. Ang pananatiling ignorante sa pera ang siyang sumpa.",emotion:"kwento_storyteller",intensity:"normal_dialogue",pauseAfterMs:1200,visualPrompt:"Dramatic shot of a yacht sailing in Palawan clear blue waters."},
-      {text:"Tandaan mo: ang bawat piso na kinikita mo, dapat may misyon.",emotion:"kapatid_mentor",intensity:"normal_dialogue",pauseAfterMs:1000,visualPrompt:"Flow chart graphics showing Income -> Expense vs Income -> Assets -> Cashflow."},
-      {text:"Huwag mong ipagpalit ang kalayaan mo sa kaginhawaan ng isang araw.",emotion:"kalmado_seryoso",intensity:"subtle_whisper",pauseAfterMs:1200,visualPrompt:"Don Bossing silhouette in a penthouse office looking down at city lights."},
-      {text:"Kapag ang Pinoy natutong mag-ipon at mag-invest, walang makakapigil sa atin.",emotion:"mayabang_may_laman",intensity:"extreme_boss",pauseAfterMs:1500,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."}
+      {text:"Kultura natin ang magpaka-martir sa trabaho. Pero tanong: yumayaman ka ba, o napapagod ka lang?",pauseAfterMs:1000,visualPrompt:"B-roll of a young Filipino professional staring at a stack of bills in a modern condo."},
+      {text:"Ang pagiging manggagawa ay hindi sumpa. Ang pananatiling ignorante sa pera ang siyang sumpa.",pauseAfterMs:1200,visualPrompt:"Dramatic shot of a yacht sailing in Palawan clear blue waters."},
+      {text:"Tandaan mo: ang bawat piso na kinikita mo, dapat may misyon.",pauseAfterMs:1000,visualPrompt:"Flow chart graphics showing Income -> Expense vs Income -> Assets -> Cashflow."},
+      {text:"Huwag mong ipagpalit ang kalayaan mo sa kaginhawaan ng isang araw.",pauseAfterMs:1200,visualPrompt:"Don Bossing silhouette in a penthouse office looking down at city lights."},
+      {text:"Kapag ang Pinoy natutong mag-ipon at mag-invest, walang makakapigil sa atin.",pauseAfterMs:1500,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."}
     ],
     thumbs:["MARTIR KA BA?","BUHAY PINOY, UTANG PINOY","KALAYAANG PINANSYAL"],
     broll:"Palawan waters. Penthouse silhouette. City lights at gold coins sa slow motion."
@@ -403,7 +395,6 @@ const state = {
   pitch:0,
   rate:100,
   vol:100,
-  autoEmotion:true,
   lines:[],
   playing:false,
   playingId:null,
@@ -604,11 +595,11 @@ function generateScript(){
   if(topicId !== "custom" && topic){
     let lines = topic.lines.map(l => ({...l, id:nextLineId()}));
     if(state.format === "longform"){
-      lines = [{text:INTRO_LONG,emotion:"kalmado_seryoso",intensity:"normal_dialogue",pauseAfterMs:900,visualPrompt:"Cinematic B-roll of Manila skylines."}, ...lines];
+      lines = [{text:INTRO_LONG,pauseAfterMs:900,visualPrompt:"Cinematic B-roll of Manila skylines."}, ...lines];
     } else {
       lines = lines.slice(0,4);
     }
-    lines.push({text:OUTRO_SHORT,emotion:"kapatid_mentor",intensity:"high_hype",pauseAfterMs:1200,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."});
+    lines.push({text:OUTRO_SHORT,pauseAfterMs:1200,visualPrompt:"Gold coin falling in slow motion with Don Bossing signature overlay."});
     const text = lines.map(l => l.text).join("\n");
     $("scriptText").value = text;
     state.lines = lines;
@@ -650,7 +641,6 @@ function splitIntoLines(){
   });
   state.lines = sentences.map(t => ({
     id:nextLineId(), text:t,
-    persona:null, intensity:null,
     pauseAfterMs:900,
     visualPrompt:""
   }));
@@ -691,7 +681,7 @@ function renderPersonas(){
     const el = document.createElement("button");
     el.className = "persona" + (p.id === state.persona ? " active" : "");
     el.innerHTML = `<b>${p.label}</b><span class="tag">${p.tagalog}</span><span class="desc">${p.desc}</span>`;
-    el.onclick = () => { state.persona = p.id; renderPersonas(); if(!state.autoEmotion) applyPersonaToAll(); };
+    el.onclick = () => { state.persona = p.id; renderPersonas(); };
     wrap.appendChild(el);
   });
 }
@@ -703,7 +693,7 @@ function renderIntensities(){
     const el = document.createElement("button");
     el.className = "intensity" + (i.id === state.intensity ? " active" : "");
     el.innerHTML = `<div class="head"><span><b>${i.label}</b><span class="tag" style="margin-left:6px">${i.tagalog}</span></span><span class="db">${i.db}dB</span></div><span class="desc">${i.desc}</span>`;
-    el.onclick = () => { state.intensity = i.id; renderIntensities(); if(!state.autoEmotion) applyIntensityToAll(); };
+    el.onclick = () => { state.intensity = i.id; renderIntensities(); };
     wrap.appendChild(el);
   });
 }
@@ -746,11 +736,7 @@ function renderLines(){
     el.className = "line" + (line.id === state.playingId ? " playing" : "");
     el.id = "ln_" + line.id;
 
-    const personaVal = state.autoEmotion ? (line.persona || state.persona) : state.persona;
-    const intensityVal = state.autoEmotion ? (line.intensity || state.intensity) : state.intensity;
-
-    const optsP = Object.keys(PERSONAS).map(id => `<option value="${id}" ${id===personaVal?"selected":""}>${PERSONAS[id].label}</option>`).join("");
-    const optsI = Object.keys(INTENSITIES).map(id => `<option value="${id}" ${id===intensityVal?"selected":""}>${INTENSITIES[id].label}</option>`).join("");
+    const optsPause = [300,600,900,1200,1500,2000,2500].map(p => `<option value="${p}" ${p===line.pauseAfterMs?"selected":""}>${p}ms pause</option>`).join("");
 
     el.innerHTML = `
       <div class="top">
@@ -759,10 +745,8 @@ function renderLines(){
       </div>
       <div class="acts">
         <button class="btn primary sm playOne" title="Play">▶</button>
-        <select class="linePersona">${optsP}</select>
-        <select class="lineIntensity">${optsI}</select>
         <select class="linePause">
-          ${[300,600,900,1200,1500,2000,2500].map(p => `<option value="${p}" ${p===line.pauseAfterMs?"selected":""}>${p}ms pause</option>`).join("")}
+          ${optsPause}
         </select>
         <div class="acts-side">
           <button class="btn ghost sm moveUp" ${idx===0?"disabled":""}>↑</button>
@@ -778,10 +762,6 @@ function renderLines(){
     ta.addEventListener("input", () => { line.text = ta.value; updateCounts(); });
 
     el.querySelector(".playOne").onclick = () => playLine(line.id);
-    const selP = el.querySelector(".linePersona");
-    selP.onchange = () => { if(state.autoEmotion) line.persona = selP.value; else state.persona = selP.value; };
-    const selI = el.querySelector(".lineIntensity");
-    selI.onchange = () => { if(state.autoEmotion) line.intensity = selI.value; else state.intensity = selI.value; };
     el.querySelector(".linePause").onchange = e => line.pauseAfterMs = parseInt(e.target.value,10);
     el.querySelector(".lineVis").oninput = e => line.visualPrompt = e.target.value;
     el.querySelector(".moveUp").onclick = () => { if(idx>0){ const [x]=state.lines.splice(idx,1); state.lines.splice(idx-1,0,x); renderLines(); } };
@@ -793,9 +773,6 @@ function renderLines(){
 }
 
 function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-
-function applyPersonaToAll(){ state.lines.forEach(l => l.persona = state.persona); renderLines(); }
-function applyIntensityToAll(){ state.lines.forEach(l => l.intensity = state.intensity); renderLines(); }
 
 function updateCounts(){
   const text = $("scriptText").value;
@@ -1015,7 +992,7 @@ function bindEvents(){
   $("btnGenerate").onclick = generateScript;
   $("btnSplit").onclick = splitIntoLines;
   $("btnClear").onclick = () => { $("scriptText").value=""; state.lines=[]; renderLines(); updateCounts(); };
-  $("btnAddLine").onclick = () => { state.lines.push({id:nextLineId(), text:"Bagong linya...", persona:null, intensity:null, pauseAfterMs:900, visualPrompt:""}); renderLines(); };
+  $("btnAddLine").onclick = () => { state.lines.push({id:nextLineId(), text:"Bagong linya...", pauseAfterMs:900, visualPrompt:""}); renderLines(); };
   $("btnRegenerateLineIds").onclick = () => { state.lines.forEach(l => l.id = nextLineId()); renderLines(); };
   $("btnPlayAll").onclick = playAll;
   $("btnStop").onclick = () => stopPlayback(true);
@@ -1045,8 +1022,6 @@ function bindEvents(){
   bindSlider("pitch", v => { state.pitch = parseInt(v,10); $("pitchVal").textContent = (v>0?"+":"") + v; });
   bindSlider("rate", v => { state.rate = parseInt(v,10); $("rateVal").textContent = (v/100).toFixed(2); });
   bindSlider("vol", v => { state.vol = parseInt(v,10); $("volVal").textContent = v + "%"; });
-
-  $("autoEmotion").onchange = e => { state.autoEmotion = e.target.checked; renderLines(); };
 }
 
 function init(){
