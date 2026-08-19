@@ -3,12 +3,7 @@ const { EdgeTTS } = require('@andresaya/edge-tts');
 const DEFAULT_VOICE = 'fil-PH-AngeloNeural';
 const VOICES = [
   'fil-PH-AngeloNeural',
-  'fil-PH-BlessicaNeural',
-  'en-US-GuyNeural',
-  'en-US-ChristopherNeural',
-  'en-US-EricNeural',
-  'en-US-BrianNeural',
-  'en-US-AriaNeural'
+  'fil-PH-BlessicaNeural'
 ];
 
 const clamp = (min, max, v) => Math.max(min, Math.min(max, v));

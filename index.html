@@ -253,7 +253,7 @@
     <div class="field">
       <label class="lbl">Natural Voice / Boses</label>
       <select id="voiceSelect"></select>
-      <div class="hint" id="voiceModeHint">Natural Filipino male voice via Edge TTS.</div>
+      <div class="hint" id="voiceModeHint">Natural Tagalog-fluent Filipino voice via Edge TTS.</div>
     </div>
 
     <div class="field">
@@ -262,6 +262,10 @@
         <div class="slider"><label>Rate <b id="rateVal">1.00</b></label><input type="range" id="rate" min="50" max="200" value="100" /></div>
         <div class="slider"><label>Volume <b id="volVal">100%</b></label><input type="range" id="vol" min="0" max="150" value="100" /></div>
       </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghost" id="btnResetVoice">Reset Voice &amp; Emotion</button>
     </div>
   </section>
 
@@ -404,13 +408,8 @@ const state = {
 
 const EDGE_API = (location.protocol === "file:" ? null : location.origin + "/api/tts");
 const EDGE_VOICES = [
-  { shortName:"fil-PH-AngeloNeural", label:"Angelo — Filipino Male (Natural)", locale:"fil-PH", gender:"Male" },
-  { shortName:"fil-PH-BlessicaNeural", label:"Blessica — Filipino Female (Natural)", locale:"fil-PH", gender:"Female" },
-  { shortName:"en-US-GuyNeural", label:"Guy — English Male (Natural)", locale:"en-US", gender:"Male" },
-  { shortName:"en-US-ChristopherNeural", label:"Christopher — English Male (Natural)", locale:"en-US", gender:"Male" },
-  { shortName:"en-US-EricNeural", label:"Eric — English Male (Natural)", locale:"en-US", gender:"Male" },
-  { shortName:"en-US-BrianNeural", label:"Brian — English Male (Natural)", locale:"en-US", gender:"Male" },
-  { shortName:"en-US-AriaNeural", label:"Aria — English Female (Natural)", locale:"en-US", gender:"Female" }
+  { shortName:"fil-PH-AngeloNeural", label:"Angelo — Filipino Male (Tagalog)", locale:"fil-PH", gender:"Male" },
+  { shortName:"fil-PH-BlessicaNeural", label:"Blessica — Filipino Female (Tagalog)", locale:"fil-PH", gender:"Female" }
 ];
 const DEFAULT_EDGE_VOICE = "fil-PH-AngeloNeural";
 
@@ -1022,6 +1021,30 @@ function bindEvents(){
   bindSlider("pitch", v => { state.pitch = parseInt(v,10); $("pitchVal").textContent = (v>0?"+":"") + v; });
   bindSlider("rate", v => { state.rate = parseInt(v,10); $("rateVal").textContent = (v/100).toFixed(2); });
   bindSlider("vol", v => { state.vol = parseInt(v,10); $("volVal").textContent = v + "%"; });
+
+  $("btnResetVoice").onclick = resetVoiceEmotion;
+}
+
+function resetVoiceEmotion(){
+  stopPlayback(false);
+  Engine.stop();
+  if(Engine.audioCache) Engine.audioCache.clear();
+  state.persona = "mayabang_may_laman";
+  state.intensity = "high_hype";
+  state.voiceURI = DEFAULT_EDGE_VOICE;
+  state.pitch = 0;
+  state.rate = 100;
+  state.vol = 100;
+  $("pitch").value = 0;
+  $("pitchVal").textContent = "+0";
+  $("rate").value = 100;
+  $("rateVal").textContent = "1.00";
+  $("vol").value = 100;
+  $("volVal").textContent = "100%";
+  renderPersonas();
+  renderIntensities();
+  populateVoiceSelect();
+  toast("Voice & emotion reset to defaults.");
 }
 
 function init(){
