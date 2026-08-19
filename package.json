@@ -4,7 +4,7 @@
   "private": true,
   "description": "Don Bossing - Filipino Billionaire Script-to-Speech Studio (free Edge TTS neural voice)",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
     "@andresaya/edge-tts": "1.8.0"
