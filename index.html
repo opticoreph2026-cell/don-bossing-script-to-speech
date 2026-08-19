@@ -408,8 +408,8 @@ const state = {
 
 const EDGE_API = (location.protocol === "file:" ? null : location.origin + "/api/tts");
 const EDGE_VOICES = [
-  { shortName:"fil-PH-AngeloNeural", label:"Angelo — Filipino Male (Tagalog)", locale:"fil-PH", gender:"Male" },
-  { shortName:"fil-PH-BlessicaNeural", label:"Blessica — Filipino Female (Tagalog)", locale:"fil-PH", gender:"Female" }
+  { shortName:"fil-PH-AngeloNeural", label:"Angelo — Filipino Male (Tagalog)", locale:"fil-PH", gender:"Male", engine:"edge" },
+  { shortName:"fil-PH-BlessicaNeural", label:"Blessica — Filipino Female (Tagalog)", locale:"fil-PH", gender:"Female", engine:"edge" }
 ];
 const DEFAULT_EDGE_VOICE = "fil-PH-AngeloNeural";
 
@@ -421,6 +421,7 @@ const nextLineId = () => "line_" + (++lineSeq) + "_" + Date.now().toString(36);
 const Engine = {
   mode:"edge",              // "edge" (Vercel API) or "browser" (fallback)
   voices:[],                // browser voices (fallback)
+  voiceCatalog: null,       // voice list from /api/tts (edge mode)
   synth: window.speechSynthesis,
   audioCache: new Map(),
   currentAudio: null,
@@ -438,6 +439,7 @@ const Engine = {
       clearTimeout(to);
       if(!r.ok) return false;
       const j = await r.json();
+      if(j && j.ok) this.voiceCatalog = (j.voices && j.voices.length) ? j.voices : null;
       return !!(j && j.ok);
     }catch(e){ return false; }
   },
@@ -701,15 +703,29 @@ function populateVoiceSelect(){
   const sel = $("voiceSelect");
   sel.innerHTML = "";
   if(Engine.mode === "edge"){
-    $("voiceModeHint").textContent = "Natural neural voice via free Edge TTS (walang API key).";
-    EDGE_VOICES.forEach(v => {
-      const o = document.createElement("option");
-      o.value = v.shortName;
-      o.textContent = v.label;
-      if(v.shortName === state.voiceURI) o.selected = true;
-      sel.appendChild(o);
+    const list = Engine.voiceCatalog || EDGE_VOICES;
+    const hasGoogle = list.some(v => v.engine === "google");
+    $("voiceModeHint").textContent = hasGoogle
+      ? "Natural Tagalog voices: free Edge TTS (Angelo, Blessica) + Google Cloud Filipino voices."
+      : "Natural neural voice via free Edge TTS (walang API key).";
+    if(!list.some(v => v.shortName === state.voiceURI)) state.voiceURI = DEFAULT_EDGE_VOICE;
+    const groups = {};
+    list.forEach(v => {
+      const g = v.engine === "google" ? "Google — Filipino (Tagalog)" : "Edge — Filipino (Tagalog)";
+      (groups[g] = groups[g] || []).push(v);
     });
-    if(!EDGE_VOICES.some(v => v.shortName === state.voiceURI)) state.voiceURI = DEFAULT_EDGE_VOICE;
+    Object.keys(groups).forEach(g => {
+      const og = document.createElement("optgroup");
+      og.label = g;
+      groups[g].forEach(v => {
+        const o = document.createElement("option");
+        o.value = v.shortName;
+        o.textContent = v.label;
+        if(v.shortName === state.voiceURI) o.selected = true;
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
     return;
   }
   $("voiceModeHint").textContent = "Browser TTS fallback (lokal o offline). Para sa natural na boses, i-deploy sa Vercel.";

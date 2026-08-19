@@ -6,12 +6,13 @@ Model: **Faceless** — bundle a voiceover, thumbnail ideas, and B-roll prompts 
 
 ## Features
 
-- **Natural human voice (free)** — uses Microsoft Edge neural TTS via a Vercel serverless function. Two **Tagalog-fluent** voices: `fil-PH-AngeloNeural` (natural-sounding Filipino male) and `fil-PH-BlessicaNeural` (Filipino female). No API key, no credits, no limits.
+- **Natural human voice (free, no key)** — Microsoft Edge neural TTS with two **Tagalog-fluent** voices: `fil-PH-AngeloNeural` (Filipino male) and `fil-PH-BlessicaNeural` (Filipino female). No API key, no credits, no limits.
+- **More Filipino characters via Google Cloud (optional)** — add up to **10 more Tagalog-fluent Google voices** (`fil-PH` Standard/WaveNet/Neural2, 6 female + 4 male) by setting a `GOOGLE_TTS_API_KEY`. Generous free tier (4M chars/month Standard, 1M WaveNet/Neural2).
 - **6 voice personas (emotions)** — Confident Billionaire, Calm Executive, Tough Love Direct, Engaging Storyteller, Suspenseful Reveal, and Warm Brotherly Advice, each with its own natural prosody (pitch/rate/volume). One persona + one intensity apply uniformly to the whole script.
 - **4 vocal intensity levels** — Subtle/Secret Tone, Normal Dialogue, High Energy/Hook, and Explosive Boss Energy, layered on top of the persona for mood-rich delivery.
 - **3 preset topics** — Sikolohiya ng Pera, Diskarte, and Buhay Pinoy with ready-made Tagalog scripts, thumbnail ideas, and B-roll prompts. Custom topics also supported.
 - **Line-by-line editor** — reorder, adjust pauses, add visual prompts per line. Voice and emotion stay uniform from the global persona + intensity settings.
-- **Full voice control** — both Tagalog-fluent Edge voices (Angelo male, Blessica female) with pitch, rate, and volume sliders, plus a **Reset** button to restore defaults. Browser TTS is kept as an automatic offline fallback.
+- **Full voice control** — every voice (Edge or Google) with pitch, rate, and volume sliders, plus a **Reset** button to restore defaults. Browser TTS is kept as an automatic offline fallback.
 - **Downloadable `.wav` voiceover** — directly generated from the Edge TTS audio (no screen-share needed) with your per-line pauses baked in.
 
 ## How to run
@@ -35,6 +36,12 @@ The natural voice comes from the serverless function in `api/tts.js` (uses the f
 - Vercel auto-detects `api/` as serverless functions and runs `npm install` from `package.json`.
 - `vercel.json` sets the function timeout to 30s.
 - The frontend auto-detects the API on load; if it's missing (e.g. opening `index.html` from disk), it silently falls back to browser TTS.
+
+### Enabling the Google Filipino voices
+
+1. In [Google Cloud Console](https://console.cloud.google.com), create a project, enable the **Cloud Text-to-Speech** API, and create an **API key** (APIs & Services → Credentials). A billing account is required for quotas; the monthly free allowances (Standard 4M chars, WaveNet/Neural2 1M chars) are usually enough.
+2. Add the key to Vercel: `vercel env add GOOGLE_TTS_API_KEY` (pick `production`).
+3. Redeploy (`vercel --prod`). The voice dropdown then shows the extra Google Tagalog voices; without the key it keeps the two free Edge voices.
 
 ## Downloading a `.wav` voiceover
 
