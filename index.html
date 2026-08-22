@@ -1166,6 +1166,11 @@ async function refreshVideoCapabilities(){
     const j = await r.json();
     const sel = $("videoModel"); sel.innerHTML = "";
     const ok = (j.models||[]).filter(m => m.enabled);
+    if(j.comfy === false){
+      sel.innerHTML = "<option value=''>— ComfyUI unreachable —</option>";
+      $("videoHint").textContent = "ComfyUI unreachable: i-start ang Kaggle notebook at i-set ang stable tunnel URL sa video.config.json (VIDEO_COMFY_URL).";
+      return;
+    }
     if(!ok.length){
       sel.innerHTML = "<option value=''>— no model / not local —</option>";
       $("videoHint").textContent = "Walang model: i-run ang 'npm run local' at i-set ang comfyUrl sa video.config.json.";
@@ -1176,6 +1181,7 @@ async function refreshVideoCapabilities(){
     });
   }catch(e){
     $("videoModel").innerHTML = "<option value=''>— offline —</option>";
+    $("videoHint").textContent = "Video server offline: i-run ang 'npm run local' sa iyong PC.";
   }
 }
 

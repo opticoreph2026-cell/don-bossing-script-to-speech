@@ -1,6 +1,7 @@
 {
   "port": 3000,
-  "comfyUrl": "https://REPLACE-WITH-YOUR-KAGGLE-TUNNEL-URL",
+  "comfyUrl": "https://REPLACE-WITH-YOUR-STABLE-TUNNEL-URL",
+  "comfyUrlEnv": "VIDEO_COMFY_URL",
   "outputDir": "jobs",
   "ffmpeg": "ffmpeg",
   "perClipTimeoutMs": 2400000,
@@ -11,8 +12,8 @@
       "workflow": "comfy/cogvideox_i2v.json"
     },
     "hunyuan": {
-      "enabled": true,
-      "label": "HunyuanVideo I2V",
+      "enabled": false,
+      "label": "HunyuanVideo I2V (needs ~24GB GPU)",
       "workflow": "comfy/hunyuan_i2v.json"
     }
   }

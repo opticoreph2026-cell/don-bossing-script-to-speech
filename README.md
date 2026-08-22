@@ -60,16 +60,17 @@ The natural voice comes from the serverless function in `api/tts.js` (uses the f
 
 Section 6 turns a sequence of storyboard images into an animated video (each image → a ~4s clip, concatenated into a 2–15 min MP4). It runs **locally** because Vercel has no GPU. The diffusion runs on a **free Kaggle P100 GPU** via ComfyUI, orchestrated by a small Node server on your PC.
 
-**Architecture:** `index.html` → `server.js` (your PC, port 3000) → ComfyUI on Kaggle (public tunnel) → ffmpeg concat → final MP4.
+**Architecture:** `index.html` → `server.js` (your PC, port 3000) → ComfyUI on Kaggle (stable public tunnel) → ffmpeg concat → final MP4.
 
-**Why $0:** Kaggle gives a free P100 (16 GB, ~30 GPU-hrs/week). Only **CogVideoX‑5B‑I2V** (quantized) fits; **HunyuanVideo** is listed but auto‑disables if the free GPU can't load it (needs ~24 GB). Not "unlimited" — re‑launch the notebook when the weekly quota/session ends and update the tunnel URL.
+**Why $0:** Kaggle gives a free P100 (16 GB, ~30 GPU-hrs/week). Only **CogVideoX‑5B‑I2V** (quantized) fits; **HunyuanVideo** is disabled by default in `video.config.json` (needs ~24 GB) and auto‑disables if attempted. Not "unlimited" — re‑launch the notebook when the weekly quota/session ends. With a **reserved ngrok subdomain the tunnel URL is stable**, so you set `comfyUrl` once and rarely touch it again.
 
 ### Setup
 1. **Install ffmpeg** (free) on your PC: `winget install ffmpeg` (or download from gyan.dev), ensure `ffmpeg` is on PATH.
-2. **Kaggle notebook:** open `comfy/kaggle_setup.ipynb` in a Kaggle Notebook, set accelerator to **GPU P100**, run all cells. It installs ComfyUI + the CogVideoX/HunyuanVideo wrappers, downloads CogVideoX weights, launches ComfyUI, and prints a `https://….trycloudflare.com` tunnel URL.
-3. Paste that URL into `video.config.json` → `comfyUrl` (replace the `REPLACE-WITH-…` placeholder).
-4. On your PC: `npm run local`, then open `http://localhost:3000`.
-5. In Section 6: drop images (storyboard), optionally add an English motion prompt per image, pick model + seconds/image, click **Generate Video**. Watch live progress; the final MP4 plays and downloads.
+2. **Stable tunnel (one‑time):** create a free [ngrok](https://ngrok.com) account, copy your authtoken, and pick a subdomain (e.g. `donbossing-video`). In the Kaggle notebook: *Add-ons → Secrets* → add `NGROK_AUTHTOKEN` and `NGROK_SUBDOMAIN`. (No‑signup alternative: pinggy.io — URL may rotate each restart.)
+3. **Kaggle notebook:** open `comfy/kaggle_setup.ipynb`, set accelerator to **GPU P100**, run all cells. It installs ComfyUI + wrappers, downloads CogVideoX weights, launches ComfyUI, and prints a stable `https://<subdomain>.ngrok-free.app` URL.
+4. Paste that URL into `video.config.json` → `comfyUrl` (or set env `VIDEO_COMFY_URL`). Set once.
+5. On your PC: `npm run local`, then open `http://localhost:3000`.
+6. In Section 6: drop images (storyboard), optionally add an English motion prompt per image, pick model + seconds/image, click **Generate Video**. Watch live progress; the final MP4 plays and downloads. If ComfyUI is down, Section 6 shows an "unreachable" warning.
 
 ### Notes / tuning
 - **Prompts are English‑only** (model limit). Motion prompts like *"gentle cinematic motion, slight camera drift"* animate the image; the Tagalog audio is added separately (visuals‑only output).

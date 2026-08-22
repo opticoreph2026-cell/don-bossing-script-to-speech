@@ -18,7 +18,7 @@ try {
   process.exit(1);
 }
 
-const COMFY = (CONFIG.comfyUrl || '').replace(/\/+$/, '');
+const COMFY = (process.env[CONFIG.comfyUrlEnv] || CONFIG.comfyUrl || '').replace(/\/+$/, '');
 const MODELS = CONFIG.models || {};
 const OUTPUT_DIR = path.join(ROOT, CONFIG.outputDir || 'jobs');
 const FFMPEG = CONFIG.ffmpeg || 'ffmpeg';
@@ -263,12 +263,29 @@ function parseBody(req) {
   });
 }
 
-function capabilities() {
-  return Object.keys(MODELS).filter(k => MODELS[k].enabled).map(k => ({
-    key: k,
-    label: MODELS[k].label,
-    enabled: !sessionDisabled.has(k)
-  }));
+async function comfyReachable() {
+  if (!COMFY || COMFY.indexOf('REPLACE') !== -1) return false;
+  try {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 5000);
+    const r = await fetch(COMFY + '/system_stats', { signal: ctrl.signal });
+    clearTimeout(to);
+    return r.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function capabilities() {
+  const ok = await comfyReachable();
+  return {
+    comfy: ok,
+    models: Object.keys(MODELS).filter(k => MODELS[k].enabled).map(k => ({
+      key: k,
+      label: MODELS[k].label,
+      enabled: ok && !sessionDisabled.has(k)
+    }))
+  };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -276,7 +293,8 @@ const server = http.createServer(async (req, res) => {
   const p = u.pathname;
 
   if (p === '/api/video/capabilities') {
-    return sendJson(res, 200, { ok: true, comfy: !!COMFY && COMFY.indexOf('REPLACE') === -1, models: capabilities() });
+    const caps = await capabilities();
+    return sendJson(res, 200, Object.assign({ ok: true }, caps));
   }
 
   if (p === '/api/video/queue' && req.method === 'POST') {
@@ -351,6 +369,10 @@ server.listen(PORT, () => {
   log('listening on http://localhost:' + PORT);
   log('ComfyUI target: ' + (COMFY || '(not set)'));
   if (!COMFY || COMFY.indexOf('REPLACE') !== -1) {
-    log('WARNING: set comfyUrl in video.config.json to your Kaggle/ComfyUI tunnel URL.');
+    log('WARNING: set comfyUrl in video.config.json (or VIDEO_COMFY_URL env) to your stable tunnel URL.');
+    return;
   }
+  comfyReachable().then(ok => {
+    log('ComfyUI reachable: ' + (ok ? 'YES' : 'NO — start the Kaggle notebook or check the tunnel URL'));
+  });
 });
