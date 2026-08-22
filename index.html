@@ -346,6 +346,7 @@
     <div class="btn-row">
       <button class="btn primary" id="btnVideoGen">Generate Video</button>
       <button class="btn ghost" id="btnVideoClear">Clear Images</button>
+      <button class="btn ghost" id="btnVideoCheck">Check Tunnel</button>
     </div>
 
     <div id="videoProgress" style="margin-top:14px;display:none">
@@ -1260,7 +1261,33 @@ function bindVideo(){
   filesEl.onchange = () => handleVideoFiles(filesEl.files);
   $("btnVideoClear").onclick = () => { videoImages.length = 0; renderVideoThumbs(); };
   $("btnVideoGen").onclick = startVideoJob;
+  $("btnVideoCheck").onclick = checkTunnel;
   refreshVideoCapabilities();
+}
+
+async function checkTunnel(){
+  const btn = $("btnVideoCheck");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = "Checking...";
+  try{
+    const r = await fetch("/api/video/capabilities");
+    const j = await r.json();
+    if(j.comfy){
+      toast("Tunnel alive — ComfyUI reachable.");
+      $("videoHint").textContent = "Tunnel OK: ComfyUI reachable. You can generate.";
+    } else {
+      toast("Tunnel DOWN — start the Kaggle notebook / check the ngrok URL.");
+      $("videoHint").textContent = "Tunnel unreachable: i-start ang Kaggle notebook at i-check ang ngrok URL sa video.config.json.";
+    }
+  }catch(e){
+    toast("Check failed: " + e.message);
+    $("videoHint").textContent = "Video server offline: i-run ang 'npm run local' sa iyong PC.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+    refreshVideoCapabilities();
+  }
 }
 
 function init(){
