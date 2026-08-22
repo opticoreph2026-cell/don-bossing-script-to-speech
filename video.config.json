@@ -1,6 +1,6 @@
 {
   "port": 3000,
-  "comfyUrl": "https://REPLACE-WITH-YOUR-STABLE-TUNNEL-URL",
+  "comfyUrl": "https://dullness-composure-sanctity.ngrok-free.dev",
   "comfyUrlEnv": "VIDEO_COMFY_URL",
   "outputDir": "jobs",
   "ffmpeg": "ffmpeg",
