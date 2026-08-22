@@ -55,3 +55,24 @@ The natural voice comes from the serverless function in `api/tts.js` (uses the f
 - Longform mode adds an intro; Shorts mode keeps it tight for retention.
 - The whole script uses one uniform voice and emotion — pick your persona + intensity once at the top and every line follows it.
 - Use **Reset Voice & Emotion** in the Voice & Emotion card to restore the default persona, intensity, voice, and sliders at any time.
+
+## Local AI Video Generator (Section 6) — free, $0
+
+Section 6 turns a sequence of storyboard images into an animated video (each image → a ~4s clip, concatenated into a 2–15 min MP4). It runs **locally** because Vercel has no GPU. The diffusion runs on a **free Kaggle P100 GPU** via ComfyUI, orchestrated by a small Node server on your PC.
+
+**Architecture:** `index.html` → `server.js` (your PC, port 3000) → ComfyUI on Kaggle (public tunnel) → ffmpeg concat → final MP4.
+
+**Why $0:** Kaggle gives a free P100 (16 GB, ~30 GPU-hrs/week). Only **CogVideoX‑5B‑I2V** (quantized) fits; **HunyuanVideo** is listed but auto‑disables if the free GPU can't load it (needs ~24 GB). Not "unlimited" — re‑launch the notebook when the weekly quota/session ends and update the tunnel URL.
+
+### Setup
+1. **Install ffmpeg** (free) on your PC: `winget install ffmpeg` (or download from gyan.dev), ensure `ffmpeg` is on PATH.
+2. **Kaggle notebook:** open `comfy/kaggle_setup.ipynb` in a Kaggle Notebook, set accelerator to **GPU P100**, run all cells. It installs ComfyUI + the CogVideoX/HunyuanVideo wrappers, downloads CogVideoX weights, launches ComfyUI, and prints a `https://….trycloudflare.com` tunnel URL.
+3. Paste that URL into `video.config.json` → `comfyUrl` (replace the `REPLACE-WITH-…` placeholder).
+4. On your PC: `npm run local`, then open `http://localhost:3000`.
+5. In Section 6: drop images (storyboard), optionally add an English motion prompt per image, pick model + seconds/image, click **Generate Video**. Watch live progress; the final MP4 plays and downloads.
+
+### Notes / tuning
+- **Prompts are English‑only** (model limit). Motion prompts like *"gentle cinematic motion, slight camera drift"* animate the image; the Tagalog audio is added separately (visuals‑only output).
+- **Workflow templates:** `comfy/cogvideox_i2v.json` and `comfy/hunyuan_i2v.json` are best‑effort graphs `server.js` auto‑fills (image, prompt, frames, resolution, fps). If a model fails to run, export your own working graph from ComfyUI (Menu → Export API Format) and overwrite the file — `server.js` injects by input key, so it keeps working.
+- **Long videos:** 15 min = 225 clips; at quantized CogVideoX on a P100, budget minutes per clip → many hours. The job runs as a background batch with live progress.
+- Your PC (low RAM, no GPU) only does light orchestration + ffmpeg concat, so keep resolution ≤480p.

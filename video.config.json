@@ -1,0 +1,19 @@
+{
+  "port": 3000,
+  "comfyUrl": "https://REPLACE-WITH-YOUR-KAGGLE-TUNNEL-URL",
+  "outputDir": "jobs",
+  "ffmpeg": "ffmpeg",
+  "perClipTimeoutMs": 2400000,
+  "models": {
+    "cogvideox": {
+      "enabled": true,
+      "label": "CogVideoX 5B I2V (quantized)",
+      "workflow": "comfy/cogvideox_i2v.json"
+    },
+    "hunyuan": {
+      "enabled": true,
+      "label": "HunyuanVideo I2V",
+      "workflow": "comfy/hunyuan_i2v.json"
+    }
+  }
+}

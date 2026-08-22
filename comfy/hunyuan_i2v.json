@@ -1,0 +1,106 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png"
+    },
+    "_meta": { "title": "Load Image" }
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "llava_llama3_fp8_scaled.safetensors",
+      "type": "hunyuanvideo"
+    },
+    "_meta": { "title": "Dual CLIP Loader" }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "a character moving naturally, gentle cinematic motion"
+    },
+    "_meta": { "title": "Positive Prompt" }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": ""
+    },
+    "_meta": { "title": "Negative Prompt" }
+  },
+  "5": {
+    "class_type": "CLIPVisionLoader",
+    "inputs": {
+      "clip_name": "llava_llama3_vision.safetensors"
+    },
+    "_meta": { "title": "CLIP Vision Loader" }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "hunyuan_video_vae_bf16.safetensors"
+    },
+    "_meta": { "title": "Load VAE" }
+  },
+  "7": {
+    "class_type": "HunyuanVideoModelLoader",
+    "inputs": {
+      "model": "hunyuan_video_v2_replace_image_to_video_720p_bf16",
+      "base_precision": "bf16",
+      "quantization": "disabled",
+      "load_device": "cuda"
+    },
+    "_meta": { "title": "HunyuanVideo Model Loader" }
+  },
+  "8": {
+    "class_type": "HunyuanVideoImageToVideoEncode",
+    "inputs": {
+      "image": ["1", 0],
+      "clip_vision": ["5", 0],
+      "model": ["7", 0],
+      "width": 480,
+      "height": 854,
+      "length": 4,
+      "strength": 0.8,
+      "stride": 3
+    },
+    "_meta": { "title": "HunyuanVideo I2V Encode" }
+  },
+  "9": {
+    "class_type": "HunyuanVideoSampler",
+    "inputs": {
+      "model": ["7", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent": ["8", 0],
+      "steps": 30,
+      "cfg": 6.0,
+      "seed": 0
+    },
+    "_meta": { "title": "HunyuanVideo Sampler" }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["9", 0],
+      "vae": ["6", 0]
+    },
+    "_meta": { "title": "VAE Decode" }
+  },
+  "11": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["10", 0],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "db_hunyuan",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "save_output": true
+    },
+    "_meta": { "title": "Video Combine" }
+  }
+}

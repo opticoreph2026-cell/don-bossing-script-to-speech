@@ -1,0 +1,70 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png"
+    },
+    "_meta": { "title": "Load Image" }
+  },
+  "2": {
+    "class_type": "CogVideoXModelLoader",
+    "inputs": {
+      "model": "CogVideoX-5b-I2V",
+      "base_precision": "bf16",
+      "quantization": "disabled",
+      "load_device": "cuda",
+      "precision": "auto"
+    },
+    "_meta": { "title": "CogVideoX Model Loader" }
+  },
+  "3": {
+    "class_type": "CogVideoXClipEncode",
+    "inputs": {
+      "clip": ["2", 1],
+      "text": "a character moving naturally, gentle cinematic motion"
+    },
+    "_meta": { "title": "Positive Prompt" }
+  },
+  "4": {
+    "class_type": "CogVideoXClipEncode",
+    "inputs": {
+      "clip": ["2", 1],
+      "text": ""
+    },
+    "_meta": { "title": "Negative Prompt" }
+  },
+  "5": {
+    "class_type": "CogVideoXSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "image": ["1", 0],
+      "num_frames": 33,
+      "steps": 50,
+      "cfg": 6.0,
+      "seed": 0
+    },
+    "_meta": { "title": "CogVideoX Sampler" }
+  },
+  "6": {
+    "class_type": "CogVideoXDecode",
+    "inputs": {
+      "samples": ["5", 0]
+    },
+    "_meta": { "title": "CogVideoX Decode" }
+  },
+  "7": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["6", 0],
+      "frame_rate": 8,
+      "loop_count": 0,
+      "filename_prefix": "db_cogvideox",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "save_output": true
+    },
+    "_meta": { "title": "Video Combine" }
+  }
+}

@@ -303,6 +303,66 @@
   </section>
 </div>
 
+<div class="wrap section">
+  <section class="card">
+    <h3><span class="n">6</span> Video Generator (Local AI)</h3>
+    <div class="hint" id="videoHint">I-run ang <b>npm run local</b> sa iyong PC at i-set ang Kaggle/ComfyUI tunnel URL sa <b>video.config.json</b>. Walang GPU ang Vercel — local lamang ito.</div>
+
+    <div class="field">
+      <label class="lbl">Images (storyboard) — bawat isa = ~4s clip</label>
+      <div id="videoDrop" style="border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center;cursor:pointer;color:var(--muted)">
+        <input type="file" id="videoFiles" accept="image/*" multiple style="display:none" />
+        Click or drop images dito (drag &amp; drop). Ang order = sequence ng video.
+      </div>
+      <div id="videoThumbs" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Per-image motion prompt (English) — optional</label>
+      <div id="videoPrompts" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <div class="layout" style="grid-template-columns:1fr 1fr;gap:14px">
+      <div class="field" style="margin:0">
+        <label class="lbl">Model</label>
+        <select id="videoModel"></select>
+      </div>
+      <div class="field" style="margin:0">
+        <label class="lbl">Seconds per image (1–30)</label>
+        <input type="number" id="videoSeconds" value="4" min="1" max="30" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">Resolution (HunyuanVideo; CogVideoX ay fixed ng model)</label>
+      <select id="videoRes">
+        <option value="0x0">Model default</option>
+        <option value="480x854">480 x 854 (portrait)</option>
+        <option value="854x480">854 x 480 (landscape)</option>
+        <option value="720x720">720 x 720 (square)</option>
+      </select>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" id="btnVideoGen">Generate Video</button>
+      <button class="btn ghost" id="btnVideoClear">Clear Images</button>
+    </div>
+
+    <div id="videoProgress" style="margin-top:14px;display:none">
+      <div class="meta"><span>Status: <b id="videoStatus">idle</b></span><span>Clips: <b id="videoClipCount">0/0</b></span></div>
+      <progress id="videoBar" value="0" max="100" style="width:100%;margin-top:8px;accent-color:var(--gold)"></progress>
+      <div id="videoLog" style="margin-top:8px;font-size:12px;color:var(--muted);max-height:160px;overflow:auto;white-space:pre-wrap"></div>
+    </div>
+
+    <div id="videoResult" style="margin-top:14px;display:none">
+      <video id="videoPlayer" controls style="width:100%;border-radius:12px;border:1px solid var(--line)"></video>
+      <div class="btn-row" style="margin-top:10px">
+        <a class="btn green" id="videoDownload" download="don-bossing-video.mp4">Download .mp4</a>
+      </div>
+    </div>
+  </section>
+</div>
+
 <div class="footer">
   <b>DON BOSSING</b> — Sikolohiya ng Pera, Diskarte, at Buhay Pinoy.<br/>
   Built for faceless YouTube creators. Free, unlimited, no API key required.
@@ -1063,8 +1123,143 @@ function resetVoiceEmotion(){
   toast("Voice & emotion reset to defaults.");
 }
 
+let videoImages = [];
+
+function handleVideoFiles(fileList){
+  const files = Array.from(fileList || []);
+  if(!files.length) return;
+  let pending = files.length;
+  files.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      videoImages.push({ name: f.name, dataUrl: reader.result });
+      if(--pending === 0) renderVideoThumbs();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderVideoThumbs(){
+  const t = $("videoThumbs"); t.innerHTML = "";
+  const p = $("videoPrompts"); p.innerHTML = "";
+  videoImages.forEach((img, i) => {
+    const thumb = document.createElement("div");
+    thumb.style.cssText = "position:relative;width:84px;flex:none";
+    const im = document.createElement("img");
+    im.src = img.dataUrl; im.style.cssText = "width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line)";
+    const num = document.createElement("span");
+    num.textContent = (i+1); num.style.cssText = "position:absolute;top:2px;left:2px;background:var(--gold);color:#000;font-size:10px;font-weight:800;border-radius:6px;padding:1px 5px";
+    thumb.appendChild(im); thumb.appendChild(num);
+    t.appendChild(thumb);
+
+    const ta = document.createElement("textarea");
+    ta.rows = 2; ta.dataset.idx = i; ta.placeholder = "Motion prompt for image " + (i+1) + " (English)";
+    ta.style.cssText = "min-height:auto;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px;font-size:12.5px;font-family:inherit;resize:vertical";
+    p.appendChild(ta);
+  });
+  $("videoHint").textContent = videoImages.length + " image(s) selected. Each becomes a ~" + ($("videoSeconds").value||4) + "s clip. Total ~" + (videoImages.length * ($("videoSeconds").value||4)) + "s.";
+}
+
+async function refreshVideoCapabilities(){
+  try{
+    const r = await fetch("/api/video/capabilities");
+    const j = await r.json();
+    const sel = $("videoModel"); sel.innerHTML = "";
+    const ok = (j.models||[]).filter(m => m.enabled);
+    if(!ok.length){
+      sel.innerHTML = "<option value=''>— no model / not local —</option>";
+      $("videoHint").textContent = "Walang model: i-run ang 'npm run local' at i-set ang comfyUrl sa video.config.json.";
+      return;
+    }
+    ok.forEach(m => {
+      const o = document.createElement("option"); o.value = m.key; o.textContent = m.label; sel.appendChild(o);
+    });
+  }catch(e){
+    $("videoModel").innerHTML = "<option value=''>— offline —</option>";
+  }
+}
+
+function startVideoJob(){
+  if(!videoImages.length){ toast("Magdagdag muna ng images."); return; }
+  const model = $("videoModel").value;
+  if(!model){ toast("No model available — run npm run local."); return; }
+  const seconds = Math.min(30, Math.max(1, parseInt($("videoSeconds").value,10) || 4));
+  const res = ($("videoRes").value || "0x0").split("x");
+  const width = parseInt(res[0],10)||0, height = parseInt(res[1],10)||0;
+  const prompts = videoImages.map((_, i) => {
+    const ta = document.querySelector("#videoPrompts textarea[data-idx='"+i+"']");
+    return ta ? ta.value.trim() : "";
+  });
+  const body = { model: model, seconds: seconds, fps: model === "cogvideox" ? 8 : 24, images: videoImages.map(x=>x.dataUrl), prompts: prompts };
+  if(width) body.width = width;
+  if(height) body.height = height;
+
+  $("btnVideoGen").disabled = true;
+  $("videoProgress").style.display = "block";
+  $("videoResult").style.display = "none";
+  $("videoLog").textContent = "";
+  $("videoStatus").textContent = "queuing";
+  $("videoBar").value = 0;
+
+  fetch("/api/video/queue", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
+    .then(r => r.json())
+    .then(j => {
+      if(j.error){ toast(j.error); $("btnVideoGen").disabled = false; return; }
+      connectVideoProgress(j.jobId);
+    })
+    .catch(e => { toast("Queue failed: " + e.message); $("btnVideoGen").disabled = false; });
+}
+
+function connectVideoProgress(jobId){
+  const es = new EventSource("/api/video/progress/" + jobId);
+  const log = $("videoLog");
+  es.onmessage = ev => {
+    let e; try { e = JSON.parse(ev.data); } catch(_) { return; }
+    if(e.type === "state"){ $("videoStatus").textContent = e.status; }
+    else if(e.type === "start"){ $("videoStatus").textContent = "processing"; $("videoClipCount").textContent = "0/" + e.total; }
+    else if(e.type === "clip"){
+      if(e.status === "failed"){ log.textContent += "\n[clip " + e.index + "] FAILED: " + e.error + (e.modelDisabled ? " (model disabled)" : ""); }
+      if(e.status === "skipped"){ log.textContent += "\n[clip " + e.index + "] skipped"; }
+    }
+    else if(e.type === "concat"){ $("videoStatus").textContent = "concatenating"; }
+    else if(e.type === "done"){
+      es.close();
+      $("btnVideoGen").disabled = false;
+      if(e.status === "done"){
+        $("videoStatus").textContent = "done";
+        $("videoClipCount").textContent = e.clips + "/" + e.total;
+        $("videoBar").value = 100;
+        const url = e.result + "?t=" + Date.now();
+        $("videoPlayer").src = url;
+        $("videoDownload").href = url;
+        $("videoResult").style.display = "block";
+        toast("Video ready! " + e.clips + " clips.");
+      } else {
+        $("videoStatus").textContent = "failed";
+        toast("Video failed: " + (e.error||"see log"));
+      }
+    }
+    if(e.progress) $("videoBar").value = Math.round(e.progress*100);
+  };
+  es.onerror = () => {};
+}
+
+function bindVideo(){
+  const filesEl = $("videoFiles");
+  const drop = $("videoDrop");
+  drop.onclick = () => filesEl.click();
+  drop.ondragover = e => { e.preventDefault(); drop.style.borderColor = "var(--gold)"; };
+  drop.ondragleave = () => { drop.style.borderColor = "var(--line)"; };
+  drop.ondrop = e => { e.preventDefault(); drop.style.borderColor = "var(--line)"; handleVideoFiles(e.dataTransfer.files); };
+  filesEl.onchange = () => handleVideoFiles(filesEl.files);
+  $("btnVideoClear").onclick = () => { videoImages.length = 0; renderVideoThumbs(); };
+  $("btnVideoGen").onclick = startVideoJob;
+  refreshVideoCapabilities();
+}
+
 function init(){
   bindEvents();
+  bindVideo();
   renderTopicChips();
   renderPersonas();
   renderIntensities();
