@@ -91,7 +91,10 @@ async function queuePrompt(graph, clientId) {
     body: JSON.stringify({ prompt: graph, client_id: clientId })
   });
   const j = await r.json();
-  if (j.error) throw new Error('queue error: ' + JSON.stringify(j.error));
+  if (j.error) {
+    const ne = j.error.node_errors ? ' ' + JSON.stringify(j.error.node_errors) : '';
+    throw new Error('queue error: ' + (j.error.message || JSON.stringify(j.error)) + ne);
+  }
   if (!j.prompt_id) throw new Error('no prompt_id returned');
   return j.prompt_id;
 }

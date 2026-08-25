@@ -28,3 +28,22 @@
   height: true,
   fps: true
 }
+[server] listening on http://localhost:3000
+[server] ComfyUI target: https://dullness-composure-sanctity.ngrok-free.dev
+[server] ComfyUI reachable: YES
+[server] clip 0: injected {
+  image: true,
+  prompt: true,
+  frames: true,
+  width: true,
+  height: true,
+  fps: true
+}
+[server] clip 0: injected {
+  image: true,
+  prompt: true,
+  frames: true,
+  width: true,
+  height: true,
+  fps: true
+}
