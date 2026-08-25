@@ -19,6 +19,8 @@ try {
 }
 
 const COMFY = (process.env[CONFIG.comfyUrlEnv] || CONFIG.comfyUrl || '').replace(/\/+$/, '');
+// ngrok free tunnels serve an interstitial/403 to programmatic callers unless this header is set.
+const NGROK_HEADERS = { 'ngrok-skip-browser-warning': 'true' };
 const MODELS = CONFIG.models || {};
 const OUTPUT_DIR = path.join(ROOT, CONFIG.outputDir || 'jobs');
 const FFMPEG = CONFIG.ffmpeg || 'ffmpeg';
@@ -44,7 +46,7 @@ async function uploadImage(buf, filename) {
   const body = Buffer.concat([head, buf, tail]);
   const r = await fetch(COMFY + '/upload/image', {
     method: 'POST',
-    headers: { 'Content-Type': 'multipart/form-data; boundary=' + boundary },
+    headers: { 'Content-Type': 'multipart/form-data; boundary=' + boundary, ...NGROK_HEADERS },
     body
   });
   if (!r.ok) throw new Error('image upload failed: ' + r.status);
@@ -85,7 +87,7 @@ function injectGraph(graph, opts) {
 async function queuePrompt(graph, clientId) {
   const r = await fetch(COMFY + '/prompt', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...NGROK_HEADERS },
     body: JSON.stringify({ prompt: graph, client_id: clientId })
   });
   const j = await r.json();
@@ -97,7 +99,7 @@ async function queuePrompt(graph, clientId) {
 async function waitHistory(promptId) {
   const deadline = Date.now() + PER_CLIP_TIMEOUT;
   while (Date.now() < deadline) {
-    const r = await fetch(COMFY + '/history/' + encodeURIComponent(promptId));
+    const r = await fetch(COMFY + '/history/' + encodeURIComponent(promptId), { headers: NGROK_HEADERS });
     const j = await r.json();
     if (j[promptId]) {
       const entry = j[promptId];
@@ -138,7 +140,7 @@ async function downloadOutput(entry) {
     subfolder: fileMeta.subfolder || '',
     type: fileMeta.type || 'output'
   }).toString();
-  const r = await fetch(COMFY + '/view?' + qs);
+  const r = await fetch(COMFY + '/view?' + qs, { headers: NGROK_HEADERS });
   if (!r.ok) throw new Error('view download failed: ' + r.status);
   return Buffer.from(await r.arrayBuffer());
 }
@@ -292,7 +294,7 @@ async function comfyReachable() {
   try {
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), 5000);
-    const r = await fetch(COMFY + '/system_stats', { signal: ctrl.signal });
+    const r = await fetch(COMFY + '/system_stats', { signal: ctrl.signal, headers: NGROK_HEADERS });
     clearTimeout(to);
     return r.ok;
   } catch (e) {
