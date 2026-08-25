@@ -98,3 +98,11 @@
   height: true,
   fps: true
 }
+[server] clip 0: injected {
+  image: true,
+  prompt: true,
+  frames: true,
+  width: true,
+  height: true,
+  fps: true
+}
