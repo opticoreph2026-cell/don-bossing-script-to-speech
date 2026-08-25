@@ -170,8 +170,9 @@ async function processJob(job) {
   // Feed the model a native-resolution frame matching the target aspect so the
   // final ffmpeg upscale (in concat) preserves aspect without distortion.
   const portrait = !(width && height && width > height);
-  const interW = portrait ? 480 : 854;
-  const interH = portrait ? 854 : 480;
+  // Native CogVideoX-5b-I2V resolution. Must be divisible by 16 (VAE factor 8 x patch 2).
+  const interW = portrait ? 480 : 720;
+  const interH = portrait ? 720 : 480;
   job.status = 'processing';
   emit(job, { type: 'start', total: total, model: model });
 

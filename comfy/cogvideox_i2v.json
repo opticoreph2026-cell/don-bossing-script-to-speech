@@ -10,7 +10,7 @@
     "inputs": {
       "image": ["1", 0],
       "width": 480,
-      "height": 854,
+      "height": 720,
       "upscale_method": "bilinear",
       "crop": "center"
     }
@@ -18,7 +18,7 @@
   "3": {
     "class_type": "CLIPLoader",
     "inputs": {
-      "model": "t5xxl_fp8_e4m3fn.safetensors",
+      "clip_name": "t5xxl_fp8_e4m3fn.safetensors",
       "type": "sd3"
     }
   },
@@ -91,18 +91,18 @@
     }
   },
   "10": {
-    "class_type": "VHS_VideoCombine",
+    "class_type": "CreateVideo",
     "inputs": {
       "images": ["9", 0],
-      "frame_rate": 8,
-      "loop_count": 0,
+      "fps": 8
+    }
+  },
+  "11": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["10", 0],
       "filename_prefix": "db_cogvideox",
-      "format": "video/h264-mp4",
-      "pix_fmt": "yuv420p",
-      "crf": 19,
-      "save_metadata": true,
-      "pingpong": false,
-      "save_output": true
+      "format": "mp4"
     }
   }
 }
