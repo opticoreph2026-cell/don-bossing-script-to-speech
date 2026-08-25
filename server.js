@@ -57,7 +57,7 @@ function injectGraph(graph, opts) {
   for (const n of Object.values(graph)) {
     const ins = n.inputs || {};
     if (imageNode === undefined && typeof ins.image === 'string') imageNode = n;
-    if (promptNode === undefined && typeof ins.text === 'string' && !/neg/i.test(n.class_type || '')) promptNode = n;
+    if (promptNode === undefined && ((typeof ins.text === 'string') || (typeof ins.prompt === 'string')) && !/neg/i.test(n.class_type || '')) promptNode = n;
     if (framesNode === undefined && (ins.num_frames !== undefined || ins.length !== undefined || ins.frames !== undefined)) framesNode = n;
     if (wNode === undefined && typeof ins.width === 'number') wNode = n;
     if (hNode === undefined && typeof ins.height === 'number') hNode = n;
@@ -114,9 +114,20 @@ async function waitHistory(promptId) {
 
 async function downloadOutput(entry) {
   let fileMeta = null;
+  const findVideo = (nodeOut) => {
+    for (const key of ['videos', 'gifs', 'Filenames']) {
+      const arr = nodeOut[key];
+      if (Array.isArray(arr) && arr.length && arr[0] && arr[0].filename) return arr[0];
+    }
+    for (const v of Object.values(nodeOut)) {
+      if (Array.isArray(v) && v.length && v[0] && v[0].filename &&
+          /\.(mp4|webm|gif)$/i.test(v[0].filename)) return v[0];
+    }
+    return null;
+  };
   for (const nodeOut of Object.values(entry.outputs || {})) {
-    const vids = nodeOut.videos || nodeOut.gifs || [];
-    if (vids && vids.length) { fileMeta = vids[0]; break; }
+    const m = findVideo(nodeOut);
+    if (m) { fileMeta = m; break; }
   }
   if (!fileMeta) throw new Error('no video output in ComfyUI response');
   const qs = new URLSearchParams({
@@ -153,7 +164,14 @@ function dataUrlToBuffer(dataUrl) {
 async function processJob(job) {
   const { model, seconds, fps, width, height, images, prompts } = job.params;
   const total = images.length;
-  const frames = Math.max(1, Math.round(seconds * fps));
+  // CogVideoX requires num_frames = 1 + 4n. Snap the requested length to the nearest valid count.
+  const k = Math.max(1, Math.round((seconds * fps - 1) / 4));
+  const frames = 1 + 4 * k;
+  // Feed the model a native-resolution frame matching the target aspect so the
+  // final ffmpeg upscale (in concat) preserves aspect without distortion.
+  const portrait = !(width && height && width > height);
+  const interW = portrait ? 480 : 854;
+  const interH = portrait ? 854 : 480;
   job.status = 'processing';
   emit(job, { type: 'start', total: total, model: model });
 
@@ -180,8 +198,8 @@ async function processJob(job) {
         frames: frames,
         seconds: seconds,
         fps: fps,
-        width: width,
-        height: height
+        width: interW,
+        height: interH
       });
       log('clip ' + i + ': injected', filled);
       emit(job, { type: 'clip', index: i, status: 'generating' });
@@ -222,12 +240,14 @@ async function processJob(job) {
   await fsp.writeFile(listPath, listText);
 
   const finalPath = path.join(clipsDir, 'final.mp4');
+  const ffmpegArgs = ['-y', '-f', 'concat', '-safe', '0', '-i', listPath];
+  if (width && height) {
+    // Upscale the native ~480p clip to the chosen output resolution without distorting aspect.
+    ffmpegArgs.push('-vf', `scale=${width}:${height}:force_original_aspect_ratio=increase,crop=${width}:${height}`);
+  }
+  ffmpegArgs.push('-c:v', 'libx264', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', finalPath);
   await new Promise((resolve) => {
-    execFile(FFMPEG, [
-      '-y', '-f', 'concat', '-safe', '0', '-i', listPath,
-      '-c:v', 'libx264', '-crf', '20', '-pix_fmt', 'yuv420p',
-      '-movflags', '+faststart', finalPath
-    ], (err) => {
+    execFile(FFMPEG, ffmpegArgs, (err) => {
       if (err) {
         job.status = 'failed';
         emit(job, { type: 'concat', status: 'failed', error: err.message });

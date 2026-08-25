@@ -76,4 +76,4 @@ Section 6 turns a sequence of storyboard images into an animated video (each ima
 - **Prompts are English‑only** (model limit). Motion prompts like *"gentle cinematic motion, slight camera drift"* animate the image; the Tagalog audio is added separately (visuals‑only output).
 - **Workflow templates:** `comfy/cogvideox_i2v.json` and `comfy/hunyuan_i2v.json` are best‑effort graphs `server.js` auto‑fills (image, prompt, frames, resolution, fps). If a model fails to run, export your own working graph from ComfyUI (Menu → Export API Format) and overwrite the file — `server.js` injects by input key, so it keeps working.
 - **Long videos:** 15 min = 225 clips; at quantized CogVideoX on a P100, budget minutes per clip → many hours. The job runs as a background batch with live progress.
-- Your PC (low RAM, no GPU) only does light orchestration + ffmpeg concat, so keep resolution ≤480p.
+- Your PC (low RAM, no GPU) does light orchestration + ffmpeg concat/upscale. CogVideoX outputs ~480p natively; `server.js` can upscale the final clip to 1080p (9:16 / 16:9) via ffmpeg.
