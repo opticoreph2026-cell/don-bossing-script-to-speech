@@ -64,7 +64,10 @@ function injectGraph(graph, opts) {
     if (fpsNode === undefined && (ins.frame_rate !== undefined || ins.fps !== undefined)) fpsNode = n;
   }
   if (imageNode) imageNode.inputs.image = opts.imageName;
-  if (promptNode) promptNode.inputs.text = opts.prompt;
+  if (promptNode) {
+    if ('text' in promptNode.inputs) promptNode.inputs.text = opts.prompt;
+    else if ('prompt' in promptNode.inputs) promptNode.inputs.prompt = opts.prompt;
+  }
   if (framesNode) {
     if ('num_frames' in framesNode.inputs) framesNode.inputs.num_frames = opts.frames;
     else if ('length' in framesNode.inputs) framesNode.inputs.length = opts.seconds;
