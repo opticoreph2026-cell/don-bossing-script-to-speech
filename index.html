@@ -348,6 +348,7 @@
       <button class="btn primary" id="btnVideoGen">Generate Video</button>
       <button class="btn ghost" id="btnVideoClear">Clear Images</button>
       <button class="btn ghost" id="btnVideoCheck">Check Tunnel</button>
+      <button class="btn primary" id="btnVideoLocal" style="display:none" onclick="window.open('http://localhost:3000', '_blank')">Launch Local Studio</button>
     </div>
 
     <div id="videoProgress" style="margin-top:14px;display:none">
@@ -1168,6 +1169,8 @@ async function refreshVideoCapabilities(){
     const j = await r.json();
     const sel = $("videoModel"); sel.innerHTML = "";
     const ok = (j.models||[]).filter(m => m.enabled);
+    $("btnVideoLocal").style.display = "none";
+    $("btnVideoGen").style.display = "inline-flex";
     if(j.comfy === false){
       sel.innerHTML = "<option value=''>— ComfyUI unreachable —</option>";
       $("videoHint").textContent = "ComfyUI unreachable: i-start ang Kaggle notebook at i-set ang stable tunnel URL sa video.config.json (VIDEO_COMFY_URL).";
@@ -1184,6 +1187,8 @@ async function refreshVideoCapabilities(){
   }catch(e){
     $("videoModel").innerHTML = "<option value=''>— offline —</option>";
     $("videoHint").textContent = "Video server offline: i-run ang 'npm run local' sa iyong PC.";
+    $("btnVideoLocal").style.display = "inline-flex";
+    $("btnVideoGen").style.display = "none";
   }
 }
 
