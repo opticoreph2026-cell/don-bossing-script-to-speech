@@ -7,14 +7,14 @@
   "perClipTimeoutMs": 2400000,
   "models": {
     "cogvideox": {
-      "enabled": true,
+      "enabled": false,
       "label": "CogVideoX 5B I2V (quantized)",
       "workflow": "comfy/cogvideox_i2v.json"
     },
-    "hunyuan": {
-      "enabled": false,
-      "label": "HunyuanVideo I2V (needs ~24GB GPU)",
-      "workflow": "comfy/hunyuan_i2v.json"
+    "wan22": {
+      "enabled": true,
+      "label": "Wan 2.2 TI2V 5B (native ComfyUI)",
+      "workflow": "comfy/wan22_i2v.json"
     }
   }
 }

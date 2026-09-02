@@ -65,6 +65,16 @@ function injectGraph(graph, opts) {
     if (hNode === undefined && typeof ins.height === 'number') hNode = n;
     if (fpsNode === undefined && (ins.frame_rate !== undefined || ins.fps !== undefined)) fpsNode = n;
   }
+  // Wan 2.2: detect Wan22ImageToVideoLatent by type (width/height/length in widgets_values, not inputs)
+  for (const n of Object.values(graph)) {
+    if (n.type === 'Wan22ImageToVideoLatent') {
+      if (wNode === undefined) wNode = n;
+      if (hNode === undefined) hNode = n;
+      if (framesNode === undefined) framesNode = n;
+    }
+    // CreateVideo: also detect by type (fps in widgets_values)
+    if (n.type === 'CreateVideo' && fpsNode === undefined) fpsNode = n;
+  }
   if (imageNode) imageNode.inputs.image = opts.imageName;
   if (promptNode) {
     if ('text' in promptNode.inputs) promptNode.inputs.text = opts.prompt;
@@ -72,14 +82,22 @@ function injectGraph(graph, opts) {
   }
   if (framesNode) {
     if ('num_frames' in framesNode.inputs) framesNode.inputs.num_frames = opts.frames;
-    else if ('length' in framesNode.inputs) framesNode.inputs.length = opts.seconds;
+    else if ('length' in framesNode.inputs) framesNode.inputs.length = opts.frames;
     else if ('frames' in framesNode.inputs) framesNode.inputs.frames = opts.frames;
+    else if (framesNode.widgets_values && framesNode.widgets_values.length >= 3) framesNode.widgets_values[2] = opts.frames;
   }
-  if (wNode && opts.width) wNode.inputs.width = opts.width;
-  if (hNode && opts.height) hNode.inputs.height = opts.height;
+  if (wNode && opts.width) {
+    wNode.inputs.width = opts.width;
+    if (wNode.widgets_values && wNode.widgets_values.length >= 1) wNode.widgets_values[0] = opts.width;
+  }
+  if (hNode && opts.height) {
+    hNode.inputs.height = opts.height;
+    if (hNode.widgets_values && hNode.widgets_values.length >= 2) hNode.widgets_values[1] = opts.height;
+  }
   if (fpsNode) {
     if ('frame_rate' in fpsNode.inputs) fpsNode.inputs.frame_rate = opts.fps;
-    else fpsNode.inputs.fps = opts.fps;
+    else if ('fps' in fpsNode.inputs) fpsNode.inputs.fps = opts.fps;
+    else if (fpsNode.widgets_values && fpsNode.widgets_values.length >= 1) fpsNode.widgets_values[0] = opts.fps;
   }
   return { image: !!imageNode, prompt: !!promptNode, frames: !!framesNode, width: !!wNode, height: !!hNode, fps: !!fpsNode };
 }
@@ -172,13 +190,11 @@ function dataUrlToBuffer(dataUrl) {
 async function processJob(job) {
   const { model, seconds, fps, width, height, images, prompts } = job.params;
   const total = images.length;
-  // CogVideoX requires num_frames = 1 + 4n. Snap the requested length to the nearest valid count.
-  const k = Math.max(1, Math.round((seconds * fps - 1) / 4));
-  const frames = 1 + 4 * k;
-  // Feed the model a native-resolution frame matching the target aspect so the
-  // final ffmpeg upscale (in concat) preserves aspect without distortion.
-  const portrait = !(width && height && width > height);
-  // Native CogVideoX-5b-I2V resolution. Must be divisible by 16 (VAE factor 8 x patch 2).
+  const isWan22 = model === 'wan22';
+  const frames = isWan22 ? Math.max(1, Math.min(81, Math.round(seconds * fps))) : (() => { const k = Math.max(1, Math.round((seconds * fps - 1) / 4)); return 1 + 4 * k; })();
+// Feed the model a native-resolution frame matching the target aspect so the
+// final ffmpeg upscale (in concat) preserves aspect without distortion.
+// Native resolutions must be divisible by 16 (VAE factor 8 x patch 2).
   const interW = portrait ? 480 : 720;
   const interH = portrait ? 720 : 480;
   job.status = 'processing';
