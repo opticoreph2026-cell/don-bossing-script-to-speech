@@ -87,17 +87,27 @@ function injectGraph(graph, opts) {
     else if (framesNode.widgets_values && framesNode.widgets_values.length >= 3) framesNode.widgets_values[2] = opts.frames;
   }
   if (wNode && opts.width) {
-    wNode.inputs.width = opts.width;
-    if (wNode.widgets_values && wNode.widgets_values.length >= 1) wNode.widgets_values[0] = opts.width;
+    if (wNode.type === 'Wan22ImageToVideoLatent') {
+      if (wNode.widgets_values && wNode.widgets_values.length >= 1) wNode.widgets_values[0] = opts.width;
+    } else {
+      wNode.inputs.width = opts.width;
+    }
   }
   if (hNode && opts.height) {
-    hNode.inputs.height = opts.height;
-    if (hNode.widgets_values && hNode.widgets_values.length >= 2) hNode.widgets_values[1] = opts.height;
+    if (hNode.type === 'Wan22ImageToVideoLatent') {
+      if (hNode.widgets_values && hNode.widgets_values.length >= 2) hNode.widgets_values[1] = opts.height;
+    } else {
+      hNode.inputs.height = opts.height;
+    }
   }
   if (fpsNode) {
-    if ('frame_rate' in fpsNode.inputs) fpsNode.inputs.frame_rate = opts.fps;
-    else if ('fps' in fpsNode.inputs) fpsNode.inputs.fps = opts.fps;
-    else if (fpsNode.widgets_values && fpsNode.widgets_values.length >= 1) fpsNode.widgets_values[0] = opts.fps;
+    if (fpsNode.type === 'CreateVideo') {
+      if (fpsNode.widgets_values && fpsNode.widgets_values.length >= 1) fpsNode.widgets_values[0] = opts.fps;
+    } else if ('frame_rate' in fpsNode.inputs) {
+      fpsNode.inputs.frame_rate = opts.fps;
+    } else if ('fps' in fpsNode.inputs) {
+      fpsNode.inputs.fps = opts.fps;
+    }
   }
   return { image: !!imageNode, prompt: !!promptNode, frames: !!framesNode, width: !!wNode, height: !!hNode, fps: !!fpsNode };
 }
