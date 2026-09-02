@@ -1203,7 +1203,7 @@ function startVideoJob(){
     const ta = document.querySelector("#videoPrompts textarea[data-idx='"+i+"']");
     return ta ? ta.value.trim() : "";
   });
-  const body = { model: model, seconds: seconds, fps: model === "cogvideox" ? 8 : 24, images: videoImages.map(x=>x.dataUrl), prompts: prompts };
+  const body = { model: model, seconds: seconds, fps: (model === "cogvideox" || model === "wan22") ? 8 : 24, images: videoImages.map(x=>x.dataUrl), prompts: prompts };
   if(width) body.width = width;
   if(height) body.height = height;
 
